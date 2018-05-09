@@ -35,7 +35,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/alanchchen/web3go/rpc"
+	"github.com/caivega/chain3go/rpc"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 )

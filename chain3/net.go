@@ -27,27 +27,61 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-package web3
+package chain3
 
 import (
-	"github.com/alanchchen/web3go/provider"
-	"github.com/alanchchen/web3go/rpc"
+	"strconv"
+
+	"github.com/caivega/chain3go/common"
 )
 
-// requestManager is responsible for passing messages to providers
-type requestManager struct {
-	provider provider.Provider
-	rpc      rpc.RPC
+// Net ...
+type Net interface {
+	Version() (string, error)
+	PeerCount() (uint64, error)
+	Listening() (bool, error)
 }
 
-func newRequestManager(provider provider.Provider) *requestManager {
-	return &requestManager{provider: provider, rpc: provider.GetRPCMethod()}
+// NetAPI ...
+type NetAPI struct {
+	requestManager *requestManager
 }
 
-func (rm *requestManager) newRequest(method string) rpc.Request {
-	return rm.rpc.NewRequest(method)
+// NewNetAPI ...
+func newNetAPI(requestManager *requestManager) Net {
+	return &NetAPI{requestManager: requestManager}
 }
 
-func (rm *requestManager) send(request rpc.Request) (rpc.Response, error) {
-	return rm.provider.Send(request)
+// Version returns the current network protocol version.
+func (net *NetAPI) Version() (string, error) {
+	req := net.requestManager.newRequest("net_version")
+	resp, err := net.requestManager.send(req)
+	if err != nil {
+		return "", err
+	}
+	return resp.Get("result").(string), nil
+}
+
+// PeerCount returns number of peers currenly connected to the client.
+func (net *NetAPI) PeerCount() (uint64, error) {
+	req := net.requestManager.newRequest("net_peerCount")
+	resp, err := net.requestManager.send(req)
+	if err != nil {
+		return 0, err
+	}
+	result, err := strconv.ParseUint(common.HexToString(resp.Get("result").(string)), 16, 64)
+	if err != nil {
+		return 0, err
+	}
+	return result, nil
+}
+
+// Listening returns true if client is actively listening for network connections.
+func (net *NetAPI) Listening() (bool, error) {
+	req := net.requestManager.newRequest("net_listening")
+	resp, err := net.requestManager.send(req)
+	if err != nil {
+		return false, err
+	}
+	return resp.Get("result").(bool), nil
 }

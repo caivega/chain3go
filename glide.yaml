@@ -1,4 +1,4 @@
-package: github.com/alanchchen/web3go
+package: github.com/caivega/chain3go
 import:
 - package: github.com/stretchr/testify
   subpackages:

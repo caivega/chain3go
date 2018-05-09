@@ -33,9 +33,9 @@ import (
 	"flag"
 	"fmt"
 
-	"github.com/alanchchen/web3go/provider"
-	"github.com/alanchchen/web3go/rpc"
-	"github.com/alanchchen/web3go/web3"
+	"github.com/caivega/chain3go/chain3"
+	"github.com/caivega/chain3go/provider"
+	"github.com/caivega/chain3go/rpc"
 )
 
 var hostname = flag.String("hostname", "localhost", "The ethereum client RPC host")
@@ -50,15 +50,15 @@ func main() {
 	}
 
 	provider := provider.NewHTTPProvider(*hostname+":"+*port, rpc.GetDefaultMethod())
-	web3Api := web3.NewWeb3(provider)
+	chain3Api := chain3.NewChain3(provider)
 
-	filter, err := web3Api.Eth.NewBlockFilter()
+	filter, err := chain3Api.Mc.NewBlockFilter()
 	if err != nil {
 		fmt.Printf("Failed to create filter, %v\n", err)
 		return
 	}
 	defer func() {
-		if _, err := web3Api.Eth.UninstallFilter(filter); err != nil {
+		if _, err := chain3Api.Mc.UninstallFilter(filter); err != nil {
 			fmt.Printf("UninstallFilter failed: %v\n", err)
 		}
 

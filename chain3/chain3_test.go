@@ -27,31 +27,31 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-package web3
+package chain3
 
 import (
 	"math/big"
 	"testing"
 
-	"github.com/alanchchen/web3go/test"
+	"github.com/caivega/chain3go/test"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 )
 
-type Web3TestSuite struct {
+type Chain3TestSuite struct {
 	suite.Suite
-	web3 *Web3
+	chain3 *Chain3
 }
 
-func (suite *Web3TestSuite) Test_IsConnected() {
-	web3 := suite.web3
-	assert.Equal(suite.T(), web3.IsConnected(), true, "should be true")
+func (suite *Chain3TestSuite) Test_IsConnected() {
+	chain3 := suite.chain3
+	assert.Equal(suite.T(), chain3.IsConnected(), true, "should be true")
 }
 
-func (suite *Web3TestSuite) Test_Sha3() {
-	web3 := suite.web3
+func (suite *Chain3TestSuite) Test_Sha3() {
+	chain3 := suite.chain3
 	s := "Some string to be hashed"
-	hash := web3.Sha3(s, nil)
+	hash := chain3.Sha3(s, nil)
 	assert.Equal(suite.T(), "0xed973b234cf2238052c9ac87072c71bcf33abc1bbd721018e0cca448ef79b379", hash, "should be equal")
 
 	encoding := struct {
@@ -59,12 +59,12 @@ func (suite *Web3TestSuite) Test_Sha3() {
 	}{
 		Encoding: "hex",
 	}
-	assert.Equal(suite.T(), "0x85dd39c91a64167ba20732b228251e67caed1462d4bcf036af88dc6856d0fdcc", web3.Sha3(hash, encoding), "should be equal")
+	assert.Equal(suite.T(), "0x85dd39c91a64167ba20732b228251e67caed1462d4bcf036af88dc6856d0fdcc", chain3.Sha3(hash, encoding), "should be equal")
 }
 
-func (suite *Web3TestSuite) Test_ToHex() {
-	web3 := suite.web3
-	s := web3.ToHex("{\"test\":\"test\"}")
+func (suite *Chain3TestSuite) Test_ToHex() {
+	chain3 := suite.chain3
+	s := chain3.ToHex("{\"test\":\"test\"}")
 	assert.Equal(suite.T(), "0x7b2274657374223a2274657374227d", s, "should be equal")
 
 	d := struct {
@@ -72,105 +72,105 @@ func (suite *Web3TestSuite) Test_ToHex() {
 	}{
 		Test: "test",
 	}
-	s = web3.ToHex(d)
+	s = chain3.ToHex(d)
 	assert.Equal(suite.T(), "0x7b2274657374223a2274657374227d", s, "should be equal")
 
-	s = web3.ToHex(true)
+	s = chain3.ToHex(true)
 	assert.Equal(suite.T(), "0x1", s, "should be equal")
 
-	s = web3.ToHex(false)
+	s = chain3.ToHex(false)
 	assert.Equal(suite.T(), "0x0", s, "should be equal")
 
 	i := new(big.Int)
 	i.SetInt64(12345)
-	s = web3.ToHex(i)
+	s = chain3.ToHex(i)
 	assert.Equal(suite.T(), "0x3039", s, "should be equal")
 }
 
-func (suite *Web3TestSuite) Test_ToASCII() {
-	web3 := suite.web3
+func (suite *Chain3TestSuite) Test_ToASCII() {
+	chain3 := suite.chain3
 	s := "0x657468657265756d000000000000000000000000000000000000000000000000"
-	assert.Equal(suite.T(), "ethereum", web3.ToASCII(s), "should be equal")
+	assert.Equal(suite.T(), "ethereum", chain3.ToASCII(s), "should be equal")
 }
 
-func (suite *Web3TestSuite) Test_FromASCII() {
-	web3 := suite.web3
+func (suite *Chain3TestSuite) Test_FromASCII() {
+	chain3 := suite.chain3
 	s := "ethereum"
 	assert.Equal(suite.T(), "0x657468657265756d", web3.FromASCII(s, 0), "should be equal")
 	assert.Equal(suite.T(), "0x657468657265756d000000000000000000000000000000000000000000000000", web3.FromASCII(s, 32), "should be equal")
 }
 
-func (suite *Web3TestSuite) Test_ToDecimal() {
-	web3 := suite.web3
+func (suite *Chain3TestSuite) Test_ToDecimal() {
+	chain3 := suite.chain3
 	s := "0x15"
-	assert.Equal(suite.T(), "21", web3.ToDecimal(s), "should be equal")
+	assert.Equal(suite.T(), "21", chain3.ToDecimal(s), "should be equal")
 }
 
-func (suite *Web3TestSuite) Test_FromDecimal() {
-	web3 := suite.web3
+func (suite *Chain3TestSuite) Test_FromDecimal() {
+	chain3 := suite.chain3
 	s := "21"
-	assert.Equal(suite.T(), "0x15", web3.FromDecimal(s), "should be equal")
+	assert.Equal(suite.T(), "0x15", chain3.FromDecimal(s), "should be equal")
 }
 
-func (suite *Web3TestSuite) Test_FromWei() {
-	web3 := suite.web3
+func (suite *Chain3TestSuite) Test_FromSha() {
+	chain3 := suite.chain3
 	s := "1"
-	assert.Equal(suite.T(), "1", web3.FromWei(s, "wei"), "should be equal")
+	assert.Equal(suite.T(), "1", chain3.FromSha(s, "sha"), "should be equal")
 	s = "1000000"
-	assert.Equal(suite.T(), "1000", web3.FromWei(s, "kwei"), "should be equal")
+	assert.Equal(suite.T(), "1000", chain3.FromSha(s, "ksha"), "should be equal")
 	s = "999000000000"
-	assert.Equal(suite.T(), "999", web3.FromWei(s, "gwei"), "should be equal")
+	assert.Equal(suite.T(), "999", chain3.FromSha(s, "gsha"), "should be equal")
 	s = "123000000000000000000"
-	assert.Equal(suite.T(), "123", web3.FromWei(s, "ether"), "should be equal")
+	assert.Equal(suite.T(), "123", chain3.FromSha(s, "mc"), "should be equal")
 	s = "1000000000000000000000000000000"
-	assert.Equal(suite.T(), "1", web3.FromWei(s, "tether"), "should be equal")
+	assert.Equal(suite.T(), "1", chain3.FromSha(s, "tmc"), "should be equal")
 }
 
-func (suite *Web3TestSuite) Test_ToWei() {
-	web3 := suite.web3
+func (suite *Chain3TestSuite) Test_ToSha() {
+	chain3 := suite.chain3
 	s := "100000"
-	assert.Equal(suite.T(), "0", web3.ToWei(s, "noether"), "should be equal")
+	assert.Equal(suite.T(), "0", chain3.ToSha(s, "nomc"), "should be equal")
 	s = "1"
-	assert.Equal(suite.T(), "1", web3.ToWei(s, "wei"), "should be equal")
+	assert.Equal(suite.T(), "1", chain3.ToSha(s, "sha"), "should be equal")
 	s = "1000"
-	assert.Equal(suite.T(), "1000000", web3.ToWei(s, "kwei"), "should be equal")
+	assert.Equal(suite.T(), "1000000", chain3.ToSha(s, "ksha"), "should be equal")
 	s = "999"
-	assert.Equal(suite.T(), "999000000000", web3.ToWei(s, "gwei"), "should be equal")
+	assert.Equal(suite.T(), "999000000000", chain3.ToSha(s, "gsha"), "should be equal")
 	s = "123"
-	assert.Equal(suite.T(), "123000000000000000000", web3.ToWei(s, "ether"), "should be equal")
+	assert.Equal(suite.T(), "123000000000000000000", chain3.ToSha(s, "mc"), "should be equal")
 	s = "1"
-	assert.Equal(suite.T(), "1000000000000000000000000000000", web3.ToWei(s, "tether"), "should be equal")
+	assert.Equal(suite.T(), "1000000000000000000000000000000", chain3.ToSha(s, "tmc"), "should be equal")
 }
 
-func (suite *Web3TestSuite) Test_ToBigNumber() {
-	web3 := suite.web3
+func (suite *Chain3TestSuite) Test_ToBigNumber() {
+	chain3 := suite.chain3
 	s := "200000000000000000000001"
-	f64s, _ := web3.ToBigNumber(s).Float64()
+	f64s, _ := chain3.ToBigNumber(s).Float64()
 	assert.Equal(suite.T(), 2.0000000000000002e+23, f64s, "should be equal")
 }
 
-func (suite *Web3TestSuite) Test_IsAddress() {
-	web3 := suite.web3
+func (suite *Chain3TestSuite) Test_IsAddress() {
+	chain3 := suite.chain3
 	s := "0x1a9afb711302c5f83b5902843d1c007a1a137632"
-	assert.Equal(suite.T(), true, web3.IsAddress(s), "should be equal")
+	assert.Equal(suite.T(), true, chain3.IsAddress(s), "should be equal")
 	s = "0x26c7ea56af25113f712befbf2077798fd7fbdb7c"
-	assert.Equal(suite.T(), true, web3.IsAddress(s), "should be equal")
+	assert.Equal(suite.T(), true, chain3.IsAddress(s), "should be equal")
 	s = "0xa4137d4ad166ae825f1b8dbb0c3d48f25f172e9e"
-	assert.Equal(suite.T(), true, web3.IsAddress(s), "should be equal")
+	assert.Equal(suite.T(), true, chain3.IsAddress(s), "should be equal")
 	s = "0xA4137D4AD166AE825F1B8DBB0C3D48F25F172E9E"
-	assert.Equal(suite.T(), true, web3.IsAddress(s), "should be equal")
+	assert.Equal(suite.T(), true, chain3.IsAddress(s), "should be equal")
 	s = "0x1"
-	assert.Equal(suite.T(), false, web3.IsAddress(s), "should be equal")
+	assert.Equal(suite.T(), false, chain3.IsAddress(s), "should be equal")
 	s = "0xA4137d4ad166ae825f1b8dbb0c3d48f25f172e9e"
-	assert.Equal(suite.T(), false, web3.IsAddress(s), "should be equal")
+	assert.Equal(suite.T(), false, chain3.IsAddress(s), "should be equal")
 	s = "I'm an account"
-	assert.Equal(suite.T(), false, web3.IsAddress(s), "should be equal")
+	assert.Equal(suite.T(), false, chain3.IsAddress(s), "should be equal")
 }
 
-func (suite *Web3TestSuite) SetupTest() {
-	suite.web3 = NewWeb3(test.NewMockHTTPProvider())
+func (suite *Chain3TestSuite) SetupTest() {
+	suite.chain3 = NewChain3(test.NewMockHTTPProvider())
 }
 
-func Test_Web3TestSuite(t *testing.T) {
-	suite.Run(t, new(Web3TestSuite))
+func Test_Chain3TestSuite(t *testing.T) {
+	suite.Run(t, new(Chain3TestSuite))
 }

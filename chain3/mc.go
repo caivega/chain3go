@@ -27,7 +27,7 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-package web3
+package chain3
 
 import (
 	"encoding/json"
@@ -35,12 +35,12 @@ import (
 	"math/big"
 	"strconv"
 
-	"github.com/alanchchen/web3go/common"
-	"github.com/alanchchen/web3go/rpc"
+	"github.com/caivega/chain3go/common"
+	"github.com/caivega/chain3go/rpc"
 )
 
-// Eth ...
-type Eth interface {
+// Mc ...
+type Mc interface {
 	ProtocolVersion() (string, error)
 	Syncing() (common.SyncStatus, error)
 	Coinbase() (common.Address, error)
@@ -86,21 +86,21 @@ type Eth interface {
 	// SubmitHashrate
 }
 
-// EthAPI ...
-type EthAPI struct {
+// MoacAPI ...
+type MoacAPI struct {
 	rpc            rpc.RPC
 	requestManager *requestManager
 }
 
-// NewEthAPI ...
-func newEthAPI(requestManager *requestManager) Eth {
-	return &EthAPI{requestManager: requestManager}
+// NewMoacAPI ...
+func newMoacAPI(requestManager *requestManager) Mc {
+	return &MoacAPI{requestManager: requestManager}
 }
 
 // ProtocolVersion returns the current ethereum protocol version.
-func (eth *EthAPI) ProtocolVersion() (string, error) {
-	req := eth.requestManager.newRequest("eth_protocolVersion")
-	resp, err := eth.requestManager.send(req)
+func (mc *MoacAPI) ProtocolVersion() (string, error) {
+	req := mc.requestManager.newRequest("mc_protocolVersion")
+	resp, err := mc.requestManager.send(req)
 	if err != nil {
 		return "", err
 	}
@@ -114,9 +114,9 @@ func (eth *EthAPI) ProtocolVersion() (string, error) {
 
 // Syncing returns true with an object with data about the sync status or false
 // with nil.
-func (eth *EthAPI) Syncing() (common.SyncStatus, error) {
-	req := eth.requestManager.newRequest("eth_syncing")
-	resp, err := eth.requestManager.send(req)
+func (mc *MoacAPI) Syncing() (common.SyncStatus, error) {
+	req := mc.requestManager.newRequest("mc_syncing")
+	resp, err := mc.requestManager.send(req)
 	if err != nil {
 		return common.SyncStatus{
 			Result: false,
@@ -154,9 +154,9 @@ func (eth *EthAPI) Syncing() (common.SyncStatus, error) {
 }
 
 // Coinbase returns the client coinbase address.
-func (eth *EthAPI) Coinbase() (addr common.Address, err error) {
-	req := eth.requestManager.newRequest("eth_coinbase")
-	resp, err := eth.requestManager.send(req)
+func (mc *MoacAPI) Coinbase() (addr common.Address, err error) {
+	req := mc.requestManager.newRequest("mc_coinbase")
+	resp, err := mc.requestManager.send(req)
 	if err != nil {
 		return common.NewAddress(nil), err
 	}
@@ -169,9 +169,9 @@ func (eth *EthAPI) Coinbase() (addr common.Address, err error) {
 }
 
 // Mining returns true if client is actively mining new blocks.
-func (eth *EthAPI) Mining() (bool, error) {
-	req := eth.requestManager.newRequest("eth_mining")
-	resp, err := eth.requestManager.send(req)
+func (mc *MoacAPI) Mining() (bool, error) {
+	req := mc.requestManager.newRequest("mc_mining")
+	resp, err := mc.requestManager.send(req)
 	if err != nil {
 		return false, err
 	}
@@ -185,9 +185,9 @@ func (eth *EthAPI) Mining() (bool, error) {
 
 // HashRate returns the number of hashes per second that the node is mining
 // with.
-func (eth *EthAPI) HashRate() (uint64, error) {
-	req := eth.requestManager.newRequest("eth_hashrate")
-	resp, err := eth.requestManager.send(req)
+func (mc *MoacAPI) HashRate() (uint64, error) {
+	req := mc.requestManager.newRequest("mc_hashrate")
+	resp, err := mc.requestManager.send(req)
 	if err != nil {
 		return 0, err
 	}
@@ -204,9 +204,9 @@ func (eth *EthAPI) HashRate() (uint64, error) {
 }
 
 // GasPrice returns the current price per gas in wei.
-func (eth *EthAPI) GasPrice() (result *big.Int, err error) {
-	req := eth.requestManager.newRequest("eth_gasPrice")
-	resp, err := eth.requestManager.send(req)
+func (mc *MoacAPI) GasPrice() (result *big.Int, err error) {
+	req := mc.requestManager.newRequest("mc_gasPrice")
+	resp, err := mc.requestManager.send(req)
 	if err != nil {
 		return nil, err
 	}
@@ -224,9 +224,9 @@ func (eth *EthAPI) GasPrice() (result *big.Int, err error) {
 }
 
 // Accounts returns a list of addresses owned by client.
-func (eth *EthAPI) Accounts() (addrs []common.Address, err error) {
-	req := eth.requestManager.newRequest("eth_accounts")
-	resp, err := eth.requestManager.send(req)
+func (mc *MoacAPI) Accounts() (addrs []common.Address, err error) {
+	req := mc.requestManager.newRequest("mc_accounts")
+	resp, err := mc.requestManager.send(req)
 	if err != nil {
 		return nil, err
 	}
@@ -243,9 +243,9 @@ func (eth *EthAPI) Accounts() (addrs []common.Address, err error) {
 }
 
 // BlockNumber returns the number of most recent block.
-func (eth *EthAPI) BlockNumber() (result *big.Int, err error) {
-	req := eth.requestManager.newRequest("eth_blockNumber")
-	resp, err := eth.requestManager.send(req)
+func (mc *MoacAPI) BlockNumber() (result *big.Int, err error) {
+	req := mc.requestManager.newRequest("mc_blockNumber")
+	resp, err := mc.requestManager.send(req)
 	if err != nil {
 		return nil, err
 	}
@@ -263,10 +263,10 @@ func (eth *EthAPI) BlockNumber() (result *big.Int, err error) {
 }
 
 // GetBalance returns the balance of the account of given address.
-func (eth *EthAPI) GetBalance(address common.Address, quantity string) (result *big.Int, err error) {
-	req := eth.requestManager.newRequest("eth_getBalance")
+func (mc *MoacAPI) GetBalance(address common.Address, quantity string) (result *big.Int, err error) {
+	req := mc.requestManager.newRequest("mc_getBalance")
 	req.Set("params", []string{address.String(), quantity})
-	resp, err := eth.requestManager.send(req)
+	resp, err := mc.requestManager.send(req)
 	if err != nil {
 		return nil, err
 	}
@@ -284,10 +284,10 @@ func (eth *EthAPI) GetBalance(address common.Address, quantity string) (result *
 }
 
 // GetStorageAt returns the value from a storage position at a given address.
-func (eth *EthAPI) GetStorageAt(address common.Address, position uint64, quantity string) (uint64, error) {
-	req := eth.requestManager.newRequest("eth_getStorageAt")
+func (mc *MoacAPI) GetStorageAt(address common.Address, position uint64, quantity string) (uint64, error) {
+	req := mc.requestManager.newRequest("mc_getStorageAt")
 	req.Set("params", []string{address.String(), fmt.Sprintf("%v", position), quantity})
-	resp, err := eth.requestManager.send(req)
+	resp, err := mc.requestManager.send(req)
 	if err != nil {
 		return 0, err
 	}
@@ -304,10 +304,10 @@ func (eth *EthAPI) GetStorageAt(address common.Address, position uint64, quantit
 }
 
 // GetTransactionCount returns the number of transactions sent from an address.
-func (eth *EthAPI) GetTransactionCount(address common.Address, quantity string) (result *big.Int, err error) {
-	req := eth.requestManager.newRequest("eth_getTransactionCount")
+func (mc *MoacAPI) GetTransactionCount(address common.Address, quantity string) (result *big.Int, err error) {
+	req := mc.requestManager.newRequest("mc_getTransactionCount")
 	req.Set("params", []string{address.String(), quantity})
-	resp, err := eth.requestManager.send(req)
+	resp, err := mc.requestManager.send(req)
 	if err != nil {
 		return nil, err
 	}
@@ -326,10 +326,10 @@ func (eth *EthAPI) GetTransactionCount(address common.Address, quantity string) 
 
 // GetBlockTransactionCountByHash returns the number of transactions in a block
 // from a block matching the given block hash.
-func (eth *EthAPI) GetBlockTransactionCountByHash(hash common.Hash) (result *big.Int, err error) {
-	req := eth.requestManager.newRequest("eth_getBlockTransactionCountByHash")
+func (mc *MoacAPI) GetBlockTransactionCountByHash(hash common.Hash) (result *big.Int, err error) {
+	req := mc.requestManager.newRequest("mc_getBlockTransactionCountByHash")
 	req.Set("params", hash.String())
-	resp, err := eth.requestManager.send(req)
+	resp, err := mc.requestManager.send(req)
 	if err != nil {
 		return nil, err
 	}
@@ -348,10 +348,10 @@ func (eth *EthAPI) GetBlockTransactionCountByHash(hash common.Hash) (result *big
 
 // GetBlockTransactionCountByNumber returns the number of transactions in a
 // block from a block matching the given block number.
-func (eth *EthAPI) GetBlockTransactionCountByNumber(quantity string) (result *big.Int, err error) {
-	req := eth.requestManager.newRequest("eth_getBlockTransactionCountByNumber")
+func (mc *MoacAPI) GetBlockTransactionCountByNumber(quantity string) (result *big.Int, err error) {
+	req := mc.requestManager.newRequest("mc_getBlockTransactionCountByNumber")
 	req.Set("params", quantity)
-	resp, err := eth.requestManager.send(req)
+	resp, err := mc.requestManager.send(req)
 	if err != nil {
 		return nil, err
 	}
@@ -370,10 +370,10 @@ func (eth *EthAPI) GetBlockTransactionCountByNumber(quantity string) (result *bi
 
 // GetUncleCountByBlockHash returns the number of uncles in a block from a block
 // matching the given block hash.
-func (eth *EthAPI) GetUncleCountByBlockHash(hash common.Hash) (result *big.Int, err error) {
-	req := eth.requestManager.newRequest("eth_getUncleCountByBlockHash")
+func (mc *MoacAPI) GetUncleCountByBlockHash(hash common.Hash) (result *big.Int, err error) {
+	req := mc.requestManager.newRequest("mc_getUncleCountByBlockHash")
 	req.Set("params", hash.String())
-	resp, err := eth.requestManager.send(req)
+	resp, err := mc.requestManager.send(req)
 	if err != nil {
 		return nil, err
 	}
@@ -392,10 +392,10 @@ func (eth *EthAPI) GetUncleCountByBlockHash(hash common.Hash) (result *big.Int, 
 
 // GetUncleCountByBlockNumber returns the number of uncles in a block from a
 // block matching the given block number.
-func (eth *EthAPI) GetUncleCountByBlockNumber(quantity string) (result *big.Int, err error) {
-	req := eth.requestManager.newRequest("eth_getUncleCountByBlockNumber")
+func (mc *MoacAPI) GetUncleCountByBlockNumber(quantity string) (result *big.Int, err error) {
+	req := mc.requestManager.newRequest("mc_getUncleCountByBlockNumber")
 	req.Set("params", quantity)
-	resp, err := eth.requestManager.send(req)
+	resp, err := mc.requestManager.send(req)
 	if err != nil {
 		return nil, err
 	}
@@ -413,10 +413,10 @@ func (eth *EthAPI) GetUncleCountByBlockNumber(quantity string) (result *big.Int,
 }
 
 // GetCode returns code at a given address.
-func (eth *EthAPI) GetCode(address common.Address, quantity string) ([]byte, error) {
-	req := eth.requestManager.newRequest("eth_getCode")
+func (mc *MoacAPI) GetCode(address common.Address, quantity string) ([]byte, error) {
+	req := mc.requestManager.newRequest("mc_getCode")
 	req.Set("params", []string{address.String(), quantity})
-	resp, err := eth.requestManager.send(req)
+	resp, err := mc.requestManager.send(req)
 	if err != nil {
 		return nil, err
 	}
@@ -429,10 +429,10 @@ func (eth *EthAPI) GetCode(address common.Address, quantity string) ([]byte, err
 }
 
 // Sign signs data with a given address.
-func (eth *EthAPI) Sign(address common.Address, data []byte) ([]byte, error) {
-	req := eth.requestManager.newRequest("eth_sign")
+func (mc *MoacAPI) Sign(address common.Address, data []byte) ([]byte, error) {
+	req := mc.requestManager.newRequest("mc_sign")
 	req.Set("params", []string{address.String(), string(data)})
-	resp, err := eth.requestManager.send(req)
+	resp, err := mc.requestManager.send(req)
 	if err != nil {
 		return nil, err
 	}
@@ -446,10 +446,10 @@ func (eth *EthAPI) Sign(address common.Address, data []byte) ([]byte, error) {
 
 // SendTransaction creates new message call transaction or a contract creation,
 // if the data field contains code.
-func (eth *EthAPI) SendTransaction(tx *common.TransactionRequest) (hash common.Hash, err error) {
-	req := eth.requestManager.newRequest("eth_sendTransaction")
+func (mc *MoacAPI) SendTransaction(tx *common.TransactionRequest) (hash common.Hash, err error) {
+	req := mc.requestManager.newRequest("mc_sendTransaction")
 	req.Set("params", []string{tx.String()})
-	resp, err := eth.requestManager.send(req)
+	resp, err := mc.requestManager.send(req)
 	if err != nil {
 		return common.NewHash(nil), err
 	}
@@ -463,10 +463,10 @@ func (eth *EthAPI) SendTransaction(tx *common.TransactionRequest) (hash common.H
 
 // SendRawTransaction creates new message call transaction or a contract
 // creation for signed transactions.
-func (eth *EthAPI) SendRawTransaction(tx []byte) (hash common.Hash, err error) {
-	req := eth.requestManager.newRequest("eth_sendRawTransaction")
+func (mc *MoacAPI) SendRawTransaction(tx []byte) (hash common.Hash, err error) {
+	req := mc.requestManager.newRequest("mc_sendRawTransaction")
 	req.Set("params", []string{common.BytesToHex(tx)})
-	resp, err := eth.requestManager.send(req)
+	resp, err := mc.requestManager.send(req)
 	if err != nil {
 		return common.NewHash(nil), err
 	}
@@ -480,10 +480,10 @@ func (eth *EthAPI) SendRawTransaction(tx []byte) (hash common.Hash, err error) {
 
 // Call executes a new message call immediately without creating a transaction
 // on the block chain.
-func (eth *EthAPI) Call(tx *common.TransactionRequest, quantity string) ([]byte, error) {
-	req := eth.requestManager.newRequest("eth_call")
+func (mc *MoacAPI) Call(tx *common.TransactionRequest, quantity string) ([]byte, error) {
+	req := mc.requestManager.newRequest("mc_call")
 	req.Set("params", []string{tx.String(), quantity})
-	resp, err := eth.requestManager.send(req)
+	resp, err := mc.requestManager.send(req)
 	if err != nil {
 		return nil, err
 	}
@@ -498,10 +498,10 @@ func (eth *EthAPI) Call(tx *common.TransactionRequest, quantity string) ([]byte,
 // EstimateGas makes a call or transaction, which won't be added to the
 // blockchain and returns the used gas, which can be used for estimating the
 // used gas.
-func (eth *EthAPI) EstimateGas(tx *common.TransactionRequest, quantity string) (result *big.Int, err error) {
-	req := eth.requestManager.newRequest("eth_estimateGas")
+func (mc *MoacAPI) EstimateGas(tx *common.TransactionRequest, quantity string) (result *big.Int, err error) {
+	req := mc.requestManager.newRequest("mc_estimateGas")
 	req.Set("params", []string{tx.String(), quantity})
-	resp, err := eth.requestManager.send(req)
+	resp, err := mc.requestManager.send(req)
 	if err != nil {
 		return nil, err
 	}
@@ -519,10 +519,10 @@ func (eth *EthAPI) EstimateGas(tx *common.TransactionRequest, quantity string) (
 }
 
 // GetBlockByHash returns information about a block by hash.
-func (eth *EthAPI) GetBlockByHash(hash common.Hash, full bool) (*common.Block, error) {
-	req := eth.requestManager.newRequest("eth_getBlockByHash")
+func (mc *MoacAPI) GetBlockByHash(hash common.Hash, full bool) (*common.Block, error) {
+	req := mc.requestManager.newRequest("mc_getBlockByHash")
 	req.Set("params", []interface{}{hash.String(), full})
-	resp, err := eth.requestManager.send(req)
+	resp, err := mc.requestManager.send(req)
 	if err != nil {
 		return nil, err
 	}
@@ -542,10 +542,10 @@ func (eth *EthAPI) GetBlockByHash(hash common.Hash, full bool) (*common.Block, e
 }
 
 // GetBlockByNumber returns information about a block by block number.
-func (eth *EthAPI) GetBlockByNumber(quantity string, full bool) (*common.Block, error) {
-	req := eth.requestManager.newRequest("eth_getBlockByNumber")
+func (mc *MoacAPI) GetBlockByNumber(quantity string, full bool) (*common.Block, error) {
+	req := mc.requestManager.newRequest("mc_getBlockByNumber")
 	req.Set("params", []interface{}{quantity, full})
-	resp, err := eth.requestManager.send(req)
+	resp, err := mc.requestManager.send(req)
 	if err != nil {
 		return nil, err
 	}
@@ -566,10 +566,10 @@ func (eth *EthAPI) GetBlockByNumber(quantity string, full bool) (*common.Block, 
 
 // GetTransactionByHash returns the information about a transaction requested by
 // transaction hash.
-func (eth *EthAPI) GetTransactionByHash(hash common.Hash) (*common.Transaction, error) {
-	req := eth.requestManager.newRequest("eth_getTransactionByHash")
+func (mc *MoacAPI) GetTransactionByHash(hash common.Hash) (*common.Transaction, error) {
+	req := mc.requestManager.newRequest("mc_getTransactionByHash")
 	req.Set("params", hash.String())
-	resp, err := eth.requestManager.send(req)
+	resp, err := mc.requestManager.send(req)
 	if err != nil {
 		return nil, err
 	}
@@ -590,10 +590,10 @@ func (eth *EthAPI) GetTransactionByHash(hash common.Hash) (*common.Transaction, 
 
 // GetTransactionByBlockHashAndIndex returns information about a transaction by
 // block hash and transaction index position.
-func (eth *EthAPI) GetTransactionByBlockHashAndIndex(hash common.Hash, index uint64) (*common.Transaction, error) {
-	req := eth.requestManager.newRequest("eth_getTransactionByBlockHashAndIndex")
+func (mc *MoacAPI) GetTransactionByBlockHashAndIndex(hash common.Hash, index uint64) (*common.Transaction, error) {
+	req := mc.requestManager.newRequest("mc_getTransactionByBlockHashAndIndex")
 	req.Set("params", []string{hash.String(), fmt.Sprintf("%v", index)})
-	resp, err := eth.requestManager.send(req)
+	resp, err := mc.requestManager.send(req)
 	if err != nil {
 		return nil, err
 	}
@@ -614,10 +614,10 @@ func (eth *EthAPI) GetTransactionByBlockHashAndIndex(hash common.Hash, index uin
 
 // GetTransactionByBlockNumberAndIndex returns information about a transaction
 // by block number and transaction index position.
-func (eth *EthAPI) GetTransactionByBlockNumberAndIndex(quantity string, index uint64) (*common.Transaction, error) {
-	req := eth.requestManager.newRequest("eth_getTransactionByBlockNumberAndIndex")
+func (mc *MoacAPI) GetTransactionByBlockNumberAndIndex(quantity string, index uint64) (*common.Transaction, error) {
+	req := mc.requestManager.newRequest("mc_getTransactionByBlockNumberAndIndex")
 	req.Set("params", []string{quantity, fmt.Sprintf("%v", index)})
-	resp, err := eth.requestManager.send(req)
+	resp, err := mc.requestManager.send(req)
 	if err != nil {
 		return nil, err
 	}
@@ -637,10 +637,10 @@ func (eth *EthAPI) GetTransactionByBlockNumberAndIndex(quantity string, index ui
 }
 
 // GetTransactionReceipt Returns the receipt of a transaction by transaction hash.
-func (eth *EthAPI) GetTransactionReceipt(hash common.Hash) (*common.TransactionReceipt, error) {
-	req := eth.requestManager.newRequest("eth_getTransactionReceipt")
+func (mc *MoacAPI) GetTransactionReceipt(hash common.Hash) (*common.TransactionReceipt, error) {
+	req := mc.requestManager.newRequest("mc_getTransactionReceipt")
 	req.Set("params", hash.String())
-	resp, err := eth.requestManager.send(req)
+	resp, err := mc.requestManager.send(req)
 	if err != nil {
 		return nil, err
 	}
@@ -661,10 +661,10 @@ func (eth *EthAPI) GetTransactionReceipt(hash common.Hash) (*common.TransactionR
 
 // GetUncleByBlockHashAndIndex returns information about a uncle of a block by
 // hash and uncle index position.
-func (eth *EthAPI) GetUncleByBlockHashAndIndex(hash common.Hash, index uint64) (*common.Block, error) {
-	req := eth.requestManager.newRequest("eth_getUncleByBlockHashAndIndex")
+func (mc *MoacAPI) GetUncleByBlockHashAndIndex(hash common.Hash, index uint64) (*common.Block, error) {
+	req := mc.requestManager.newRequest("mc_getUncleByBlockHashAndIndex")
 	req.Set("params", []string{hash.String(), fmt.Sprintf("%d", index)})
-	resp, err := eth.requestManager.send(req)
+	resp, err := mc.requestManager.send(req)
 	if err != nil {
 		return nil, err
 	}
@@ -685,10 +685,10 @@ func (eth *EthAPI) GetUncleByBlockHashAndIndex(hash common.Hash, index uint64) (
 
 // GetUncleByBlockNumberAndIndex returns information about a uncle of a block by
 // number and uncle index position.
-func (eth *EthAPI) GetUncleByBlockNumberAndIndex(quantity string, index uint64) (*common.Block, error) {
-	req := eth.requestManager.newRequest("eth_getUncleByBlockNumberAndIndex")
+func (mc *MoacAPI) GetUncleByBlockNumberAndIndex(quantity string, index uint64) (*common.Block, error) {
+	req := mc.requestManager.newRequest("mc_getUncleByBlockNumberAndIndex")
 	req.Set("params", []string{quantity, fmt.Sprintf("%d", index)})
-	resp, err := eth.requestManager.send(req)
+	resp, err := mc.requestManager.send(req)
 	if err != nil {
 		return nil, err
 	}
@@ -708,9 +708,9 @@ func (eth *EthAPI) GetUncleByBlockNumberAndIndex(quantity string, index uint64) 
 }
 
 // GetCompilers returns a list of available compilers in the client.
-func (eth *EthAPI) GetCompilers() (result []string, err error) {
-	req := eth.requestManager.newRequest("eth_getCompilers")
-	resp, err := eth.requestManager.send(req)
+func (mc *MoacAPI) GetCompilers() (result []string, err error) {
+	req := mc.requestManager.newRequest("mc_getCompilers")
+	resp, err := mc.requestManager.send(req)
 	if err != nil {
 		return nil, err
 	}
@@ -727,14 +727,14 @@ func (eth *EthAPI) GetCompilers() (result []string, err error) {
 
 // NewFilter creates a filter object, based on filter options, to notify when
 // the state changes (logs). To check if the state has changed, call
-// eth_getFilterChanges.
-func (eth *EthAPI) NewFilter(option *FilterOption) (Filter, error) {
-	req := eth.requestManager.newRequest("eth_newFilter")
+// mc_getFilterChanges.
+func (mc *MoacAPI) NewFilter(option *FilterOption) (Filter, error) {
+	req := mc.requestManager.newRequest("mc_newFilter")
 	if option == nil {
 		option = &FilterOption{}
 	}
 	req.Set("params", option)
-	resp, err := eth.requestManager.send(req)
+	resp, err := mc.requestManager.send(req)
 	if err != nil {
 		return nil, err
 	}
@@ -747,14 +747,14 @@ func (eth *EthAPI) NewFilter(option *FilterOption) (Filter, error) {
 	if err != nil {
 		return nil, err
 	}
-	return newFilter(eth, TypeNormal, id), nil
+	return newFilter(mc, TypeNormal, id), nil
 }
 
 // NewBlockFilter creates a filter in the node, to notify when a new block
-// arrives. To check if the state has changed, call eth_getFilterChanges.
-func (eth *EthAPI) NewBlockFilter() (Filter, error) {
-	req := eth.requestManager.newRequest("eth_newBlockFilter")
-	resp, err := eth.requestManager.send(req)
+// arrives. To check if the state has changed, call mc_getFilterChanges.
+func (mc *MoacAPI) NewBlockFilter() (Filter, error) {
+	req := mc.requestManager.newRequest("mc_newBlockFilter")
+	resp, err := mc.requestManager.send(req)
 	if err != nil {
 		return nil, err
 	}
@@ -767,15 +767,15 @@ func (eth *EthAPI) NewBlockFilter() (Filter, error) {
 	if err != nil {
 		return nil, err
 	}
-	return newFilter(eth, TypeBlockFilter, id), nil
+	return newFilter(mc, TypeBlockFilter, id), nil
 }
 
 // NewPendingTransactionFilter creates a filter in the node, to notify when new
 // pending transactions arrive. To check if the state has changed, call
-// eth_getFilterChanges.
-func (eth *EthAPI) NewPendingTransactionFilter() (Filter, error) {
-	req := eth.requestManager.newRequest("eth_newPendingTransactionFilter")
-	resp, err := eth.requestManager.send(req)
+// mc_getFilterChanges.
+func (mc *MoacAPI) NewPendingTransactionFilter() (Filter, error) {
+	req := mc.requestManager.newRequest("mc_newPendingTransactionFilter")
+	resp, err := mc.requestManager.send(req)
 	if err != nil {
 		return nil, err
 	}
@@ -788,16 +788,16 @@ func (eth *EthAPI) NewPendingTransactionFilter() (Filter, error) {
 	if err != nil {
 		return nil, err
 	}
-	return newFilter(eth, TypeTransactionFilter, id), nil
+	return newFilter(mc, TypeTransactionFilter, id), nil
 }
 
 // UninstallFilter uninstalls a filter with given id. Should always be called
 // when watch is no longer needed. Additonally Filters timeout when they aren't
-// requested with eth_getFilterChanges for a period of time.
-func (eth *EthAPI) UninstallFilter(filter Filter) (bool, error) {
-	req := eth.requestManager.newRequest("eth_uninstallFilter")
+// requested with mc_getFilterChanges for a period of time.
+func (mc *MoacAPI) UninstallFilter(filter Filter) (bool, error) {
+	req := mc.requestManager.newRequest("mc_uninstallFilter")
 	req.Set("params", fmt.Sprintf("0x%x", filter.ID()))
-	resp, err := eth.requestManager.send(req)
+	resp, err := mc.requestManager.send(req)
 	if err != nil {
 		return false, err
 	}
@@ -809,12 +809,12 @@ func (eth *EthAPI) UninstallFilter(filter Filter) (bool, error) {
 	return resp.Get("result").(bool), nil
 }
 
-// GetFilterChanges polling method for a filter, which returns an array of logs
+// GetFilterChanges polling mmcod for a filter, which returns an array of logs
 // which occurred since last poll.
-func (eth *EthAPI) GetFilterChanges(filter Filter) (result []interface{}, err error) {
-	req := eth.requestManager.newRequest("eth_getFilterChanges")
+func (mc *MoacAPI) GetFilterChanges(filter Filter) (result []interface{}, err error) {
+	req := mc.requestManager.newRequest("mc_getFilterChanges")
 	req.Set("params", fmt.Sprintf("0x%x", filter.ID()))
-	resp, err := eth.requestManager.send(req)
+	resp, err := mc.requestManager.send(req)
 	if err != nil {
 		return nil, err
 	}
@@ -827,10 +827,10 @@ func (eth *EthAPI) GetFilterChanges(filter Filter) (result []interface{}, err er
 }
 
 // GetFilterLogs returns an array of all logs matching filter with given id.
-func (eth *EthAPI) GetFilterLogs(filter Filter) (result []interface{}, err error) {
-	req := eth.requestManager.newRequest("eth_getFilterLogs")
+func (mc *MoacAPI) GetFilterLogs(filter Filter) (result []interface{}, err error) {
+	req := mc.requestManager.newRequest("mc_getFilterLogs")
 	req.Set("params", fmt.Sprintf("0x%x", filter.ID()))
-	resp, err := eth.requestManager.send(req)
+	resp, err := mc.requestManager.send(req)
 	if err != nil {
 		return nil, err
 	}
@@ -843,10 +843,10 @@ func (eth *EthAPI) GetFilterLogs(filter Filter) (result []interface{}, err error
 }
 
 // GetLogs returns an array of all logs matching a given filter object.
-func (eth *EthAPI) GetLogs(filter Filter) (result []interface{}, err error) {
-	req := eth.requestManager.newRequest("eth_getLogs")
+func (mc *MoacAPI) GetLogs(filter Filter) (result []interface{}, err error) {
+	req := mc.requestManager.newRequest("mc_getLogs")
 	req.Set("params", fmt.Sprintf("0x%x", filter.ID()))
-	resp, err := eth.requestManager.send(req)
+	resp, err := mc.requestManager.send(req)
 	if err != nil {
 		return nil, err
 	}
@@ -860,9 +860,9 @@ func (eth *EthAPI) GetLogs(filter Filter) (result []interface{}, err error) {
 
 // GetWork returns the hash of the current block, the seedHash, and the boundary
 // condition to be met ("target").
-func (eth *EthAPI) GetWork() (header, seed, boundary common.Hash, err error) {
-	req := eth.requestManager.newRequest("eth_getWork")
-	resp, err := eth.requestManager.send(req)
+func (mc *MoacAPI) GetWork() (header, seed, boundary common.Hash, err error) {
+	req := mc.requestManager.newRequest("mc_getWork")
+	resp, err := mc.requestManager.send(req)
 	if err != nil {
 		return common.NewHash(nil), common.NewHash(nil), common.NewHash(nil), err
 	}
@@ -879,14 +879,14 @@ func (eth *EthAPI) GetWork() (header, seed, boundary common.Hash, err error) {
 }
 
 // SubmitWork is used for submitting a proof-of-work solution.
-func (eth *EthAPI) SubmitWork(nonce uint64, header, mixDigest common.Hash) (bool, error) {
-	req := eth.requestManager.newRequest("eth_submitWork")
+func (mc *MoacAPI) SubmitWork(nonce uint64, header, mixDigest common.Hash) (bool, error) {
+	req := mc.requestManager.newRequest("mc_submitWork")
 	req.Set("params", []string{
 		fmt.Sprintf("0x%16x", nonce),
 		header.String(),
 		mixDigest.String(),
 	})
-	resp, err := eth.requestManager.send(req)
+	resp, err := mc.requestManager.send(req)
 	if err != nil {
 		return false, err
 	}

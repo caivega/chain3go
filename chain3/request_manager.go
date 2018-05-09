@@ -27,48 +27,27 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-package web3
+package chain3
 
 import (
-	"testing"
-
-	"github.com/alanchchen/web3go/test"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/suite"
+	"github.com/caivega/chain3go/provider"
+	"github.com/caivega/chain3go/rpc"
 )
 
-type NetTestSuite struct {
-	suite.Suite
-	web3 *Web3
-	net  Net
+// requestManager is responsible for passing messages to providers
+type requestManager struct {
+	provider provider.Provider
+	rpc      rpc.RPC
 }
 
-func (suite *NetTestSuite) Test_Version() {
-	net := suite.net
-	version, err := net.Version()
-	assert.NoError(suite.T(), err, "Should be no error")
-	assert.NotEqual(suite.T(), "", version, "version is empty")
+func newRequestManager(provider provider.Provider) *requestManager {
+	return &requestManager{provider: provider, rpc: provider.GetRPCMethod()}
 }
 
-func (suite *NetTestSuite) Test_Listening() {
-	net := suite.net
-	listening, err := net.Listening()
-	assert.NoError(suite.T(), err, "Should be no error")
-	assert.Exactly(suite.T(), true, listening, "should be true")
+func (rm *requestManager) newRequest(method string) rpc.Request {
+	return rm.rpc.NewRequest(method)
 }
 
-func (suite *NetTestSuite) Test_PeerCount() {
-	net := suite.net
-	count, err := net.PeerCount()
-	assert.NoError(suite.T(), err, "Should be no error")
-	assert.EqualValues(suite.T(), 50, count, "should be equal")
-}
-
-func (suite *NetTestSuite) SetupTest() {
-	suite.web3 = NewWeb3(test.NewMockHTTPProvider())
-	suite.net = suite.web3.Net
-}
-
-func Test_NetTestSuite(t *testing.T) {
-	suite.Run(t, new(NetTestSuite))
+func (rm *requestManager) send(request rpc.Request) (rpc.Response, error) {
+	return rm.provider.Send(request)
 }

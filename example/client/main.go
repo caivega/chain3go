@@ -33,9 +33,9 @@ import (
 	"flag"
 	"fmt"
 
-	"github.com/alanchchen/web3go/provider"
-	"github.com/alanchchen/web3go/rpc"
-	"github.com/alanchchen/web3go/web3"
+	"github.com/caivega/chain3go/chain3"
+	"github.com/caivega/chain3go/provider"
+	"github.com/caivega/chain3go/rpc"
 )
 
 var hostname = flag.String("hostname", "localhost", "The ethereum client RPC host")
@@ -50,9 +50,9 @@ func main() {
 	}
 
 	provider := provider.NewHTTPProvider(*hostname+":"+*port, rpc.GetDefaultMethod())
-	web3 := web3.NewWeb3(provider)
+	chain3 := chain3.NewChain3(provider)
 
-	if accounts, err := web3.Eth.Accounts(); err == nil {
+	if accounts, err := chain3.Mc.Accounts(); err == nil {
 		for _, account := range accounts {
 			fmt.Printf("%s\n", account.String())
 		}

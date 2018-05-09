@@ -27,7 +27,7 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-package web3
+package chain3
 
 import (
 	"encoding/json"
@@ -35,7 +35,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/alanchchen/web3go/common"
+	"github.com/caivega/chain3go/common"
 )
 
 var (
@@ -75,7 +75,7 @@ type Filter interface {
 }
 
 type baseFilter struct {
-	eth        Eth
+	mc         Mc
 	filterType FilterType
 	filterID   uint64
 }
@@ -95,9 +95,9 @@ type watchChannel struct {
 // Filter
 
 // newFilter creates a filter object, based on filter options and filter id.
-func newFilter(eth Eth, filterType FilterType, id uint64) Filter {
+func newFilter(mc Mc, filterType FilterType, id uint64) Filter {
 	return &baseFilter{
-		eth:        eth,
+		mc:         mc,
 		filterType: filterType,
 		filterID:   id,
 	}
@@ -122,7 +122,7 @@ func (f *baseFilter) Watch() WatchChannel {
 				close(dataCh)
 				return
 			case <-ticker.C:
-				results, _ := f.eth.GetFilterChanges(f)
+				results, _ := f.mc.GetFilterChanges(f)
 				for _, r := range results {
 					dataCh <- r
 				}

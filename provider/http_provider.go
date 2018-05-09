@@ -35,7 +35,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/alanchchen/web3go/rpc"
+	"github.com/caivega/chain3go/rpc"
 )
 
 // HTTPProvider provides basic web3 interface
@@ -68,6 +68,7 @@ func (provider *HTTPProvider) IsConnected() bool {
 // Send JSON RPC request through http client
 func (provider *HTTPProvider) Send(request rpc.Request) (response rpc.Response, err error) {
 	contentType := provider.determineContentType()
+	fmt.Println("[send]", request.String())
 	resp, err := http.Post(provider.host, contentType, strings.NewReader(request.String()))
 	if err != nil {
 		return nil, err
@@ -80,6 +81,7 @@ func (provider *HTTPProvider) Send(request rpc.Request) (response rpc.Response, 
 	}
 
 	response = provider.rpc.NewResponse(body)
+	fmt.Println("[get]", string(body))
 	if response == nil {
 		err = fmt.Errorf("Malformed response body, %s", string(body))
 	}

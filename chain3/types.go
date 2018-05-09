@@ -27,13 +27,13 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-package web3
+package chain3
 
 import (
 	"encoding/json"
 	"math/big"
 
-	"github.com/alanchchen/web3go/common"
+	"github.com/caivega/chain3go/common"
 )
 
 type jsonBlock struct {

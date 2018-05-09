@@ -27,61 +27,48 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-package web3
+package chain3
 
 import (
-	"strconv"
+	"testing"
 
-	"github.com/alanchchen/web3go/common"
+	"github.com/caivega/chain3go/test"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/suite"
 )
 
-// Net ...
-type Net interface {
-	Version() (string, error)
-	PeerCount() (uint64, error)
-	Listening() (bool, error)
+type NetTestSuite struct {
+	suite.Suite
+	chain3 *Chain3
+	net    Net
 }
 
-// NetAPI ...
-type NetAPI struct {
-	requestManager *requestManager
+func (suite *NetTestSuite) Test_Version() {
+	net := suite.net
+	version, err := net.Version()
+	assert.NoError(suite.T(), err, "Should be no error")
+	assert.NotEqual(suite.T(), "", version, "version is empty")
 }
 
-// NewNetAPI ...
-func newNetAPI(requestManager *requestManager) Net {
-	return &NetAPI{requestManager: requestManager}
+func (suite *NetTestSuite) Test_Listening() {
+	net := suite.net
+	listening, err := net.Listening()
+	assert.NoError(suite.T(), err, "Should be no error")
+	assert.Exactly(suite.T(), true, listening, "should be true")
 }
 
-// Version returns the current network protocol version.
-func (net *NetAPI) Version() (string, error) {
-	req := net.requestManager.newRequest("net_version")
-	resp, err := net.requestManager.send(req)
-	if err != nil {
-		return "", err
-	}
-	return resp.Get("result").(string), nil
+func (suite *NetTestSuite) Test_PeerCount() {
+	net := suite.net
+	count, err := net.PeerCount()
+	assert.NoError(suite.T(), err, "Should be no error")
+	assert.EqualValues(suite.T(), 50, count, "should be equal")
 }
 
-// PeerCount returns number of peers currenly connected to the client.
-func (net *NetAPI) PeerCount() (uint64, error) {
-	req := net.requestManager.newRequest("net_peerCount")
-	resp, err := net.requestManager.send(req)
-	if err != nil {
-		return 0, err
-	}
-	result, err := strconv.ParseUint(common.HexToString(resp.Get("result").(string)), 16, 64)
-	if err != nil {
-		return 0, err
-	}
-	return result, nil
+func (suite *NetTestSuite) SetupTest() {
+	suite.chain3 = NewChain3(test.NewMockHTTPProvider())
+	suite.net = suite.chain3.Net
 }
 
-// Listening returns true if client is actively listening for network connections.
-func (net *NetAPI) Listening() (bool, error) {
-	req := net.requestManager.newRequest("net_listening")
-	resp, err := net.requestManager.send(req)
-	if err != nil {
-		return false, err
-	}
-	return resp.Get("result").(bool), nil
+func Test_NetTestSuite(t *testing.T) {
+	suite.Run(t, new(NetTestSuite))
 }
