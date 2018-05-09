@@ -71,13 +71,13 @@ func (opt *FilterOption) String() string {
 // Filter ...
 type Filter interface {
 	Watch() WatchChannel
-	ID() uint64
+	ID() string
 }
 
 type baseFilter struct {
 	mc         Mc
 	filterType FilterType
-	filterID   uint64
+	filterID   string
 }
 
 // WatchChannel ...
@@ -95,7 +95,7 @@ type watchChannel struct {
 // Filter
 
 // newFilter creates a filter object, based on filter options and filter id.
-func newFilter(mc Mc, filterType FilterType, id uint64) Filter {
+func newFilter(mc Mc, filterType FilterType, id string) Filter {
 	return &baseFilter{
 		mc:         mc,
 		filterType: filterType,
@@ -137,7 +137,7 @@ func (f *baseFilter) Watch() WatchChannel {
 }
 
 // ID returns the filter identifier
-func (f *baseFilter) ID() uint64 {
+func (f *baseFilter) ID() string {
 	return f.filterID
 }
 

@@ -743,10 +743,7 @@ func (mc *MoacAPI) NewFilter(option *FilterOption) (Filter, error) {
 		return nil, resp.Error()
 	}
 
-	id, err := strconv.ParseUint(common.HexToString(resp.Get("result").(string)), 16, 64)
-	if err != nil {
-		return nil, err
-	}
+	id := resp.Get("result").(string)
 	return newFilter(mc, TypeNormal, id), nil
 }
 
@@ -763,10 +760,7 @@ func (mc *MoacAPI) NewBlockFilter() (Filter, error) {
 		return nil, resp.Error()
 	}
 
-	id, err := strconv.ParseUint(common.HexToString(resp.Get("result").(string)), 16, 64)
-	if err != nil {
-		return nil, err
-	}
+	id := resp.Get("result").(string)
 	return newFilter(mc, TypeBlockFilter, id), nil
 }
 
@@ -784,10 +778,7 @@ func (mc *MoacAPI) NewPendingTransactionFilter() (Filter, error) {
 		return nil, resp.Error()
 	}
 
-	id, err := strconv.ParseUint(common.HexToString(resp.Get("result").(string)), 16, 64)
-	if err != nil {
-		return nil, err
-	}
+	id := resp.Get("result").(string)
 	return newFilter(mc, TypeTransactionFilter, id), nil
 }
 
@@ -796,7 +787,7 @@ func (mc *MoacAPI) NewPendingTransactionFilter() (Filter, error) {
 // requested with mc_getFilterChanges for a period of time.
 func (mc *MoacAPI) UninstallFilter(filter Filter) (bool, error) {
 	req := mc.requestManager.newRequest("mc_uninstallFilter")
-	req.Set("params", fmt.Sprintf("0x%x", filter.ID()))
+	req.Set("params", filter.ID())
 	resp, err := mc.requestManager.send(req)
 	if err != nil {
 		return false, err
@@ -813,7 +804,7 @@ func (mc *MoacAPI) UninstallFilter(filter Filter) (bool, error) {
 // which occurred since last poll.
 func (mc *MoacAPI) GetFilterChanges(filter Filter) (result []interface{}, err error) {
 	req := mc.requestManager.newRequest("mc_getFilterChanges")
-	req.Set("params", fmt.Sprintf("0x%x", filter.ID()))
+	req.Set("params", filter.ID())
 	resp, err := mc.requestManager.send(req)
 	if err != nil {
 		return nil, err
@@ -829,7 +820,7 @@ func (mc *MoacAPI) GetFilterChanges(filter Filter) (result []interface{}, err er
 // GetFilterLogs returns an array of all logs matching filter with given id.
 func (mc *MoacAPI) GetFilterLogs(filter Filter) (result []interface{}, err error) {
 	req := mc.requestManager.newRequest("mc_getFilterLogs")
-	req.Set("params", fmt.Sprintf("0x%x", filter.ID()))
+	req.Set("params", filter.ID())
 	resp, err := mc.requestManager.send(req)
 	if err != nil {
 		return nil, err
@@ -845,7 +836,7 @@ func (mc *MoacAPI) GetFilterLogs(filter Filter) (result []interface{}, err error
 // GetLogs returns an array of all logs matching a given filter object.
 func (mc *MoacAPI) GetLogs(filter Filter) (result []interface{}, err error) {
 	req := mc.requestManager.newRequest("mc_getLogs")
-	req.Set("params", fmt.Sprintf("0x%x", filter.ID()))
+	req.Set("params", filter.ID())
 	resp, err := mc.requestManager.send(req)
 	if err != nil {
 		return nil, err
