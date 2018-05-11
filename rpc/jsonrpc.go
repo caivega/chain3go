@@ -61,9 +61,9 @@ func (req *JSONRPCRequest) Set(key string, value interface{}) {
 		req.Params = req.Params[:0]
 		switch reflect.TypeOf(value).Kind() {
 		case reflect.Slice, reflect.Array:
-			v := reflect.ValueOf(value)
-			for i := 0; i < v.Len(); i++ {
-				req.Params = append(req.Params, v.Index(i).String())
+			args := value.([]interface{})
+			for _, arg := range args {
+				req.Params = append(req.Params, arg)
 			}
 		default:
 			req.Params = append(req.Params, value)
@@ -176,7 +176,7 @@ func (rpc *JSONRPC) NewRequest(method string, args ...interface{}) Request {
 	request := &JSONRPCRequest{Version: version, Method: method, Identifier: rpc.newID()}
 	request.Params = make([]interface{}, 0)
 	for _, arg := range args {
-		request.Params = append(request.Params, fmt.Sprintf("%v", arg))
+		request.Params = append(request.Params, arg)
 	}
 	return request
 }

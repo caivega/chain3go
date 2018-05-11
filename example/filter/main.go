@@ -52,7 +52,8 @@ func main() {
 	provider := provider.NewHTTPProvider(*hostname+":"+*port, rpc.GetDefaultMethod())
 	chain3Api := chain3.NewChain3(provider)
 
-	filter, err := chain3Api.Mc.NewBlockFilter()
+	// filter, err := chain3Api.Mc.NewBlockFilter()
+	filter, err := chain3Api.Mc.NewPendingTransactionFilter()
 	if err != nil {
 		fmt.Printf("Failed to create filter, %v\n", err)
 		return
