@@ -89,18 +89,18 @@ type Mc interface {
 // MoacAPI ...
 type MoacAPI struct {
 	rpc            rpc.RPC
-	requestManager *requestManager
+	requestManager *RequestManager
 }
 
 // NewMoacAPI ...
-func newMoacAPI(requestManager *requestManager) Mc {
+func newMoacAPI(requestManager *RequestManager) Mc {
 	return &MoacAPI{requestManager: requestManager}
 }
 
 // ProtocolVersion returns the current ethereum protocol version.
 func (mc *MoacAPI) ProtocolVersion() (string, error) {
-	req := mc.requestManager.newRequest("mc_protocolVersion")
-	resp, err := mc.requestManager.send(req)
+	req := mc.requestManager.NewRequest("mc_protocolVersion")
+	resp, err := mc.requestManager.Send(req)
 	if err != nil {
 		return "", err
 	}
@@ -115,8 +115,8 @@ func (mc *MoacAPI) ProtocolVersion() (string, error) {
 // Syncing returns true with an object with data about the sync status or false
 // with nil.
 func (mc *MoacAPI) Syncing() (common.SyncStatus, error) {
-	req := mc.requestManager.newRequest("mc_syncing")
-	resp, err := mc.requestManager.send(req)
+	req := mc.requestManager.NewRequest("mc_syncing")
+	resp, err := mc.requestManager.Send(req)
 	if err != nil {
 		return common.SyncStatus{
 			Result: false,
@@ -155,8 +155,8 @@ func (mc *MoacAPI) Syncing() (common.SyncStatus, error) {
 
 // Coinbase returns the client coinbase address.
 func (mc *MoacAPI) Coinbase() (addr common.Address, err error) {
-	req := mc.requestManager.newRequest("mc_coinbase")
-	resp, err := mc.requestManager.send(req)
+	req := mc.requestManager.NewRequest("mc_coinbase")
+	resp, err := mc.requestManager.Send(req)
 	if err != nil {
 		return common.NewAddress(nil), err
 	}
@@ -170,8 +170,8 @@ func (mc *MoacAPI) Coinbase() (addr common.Address, err error) {
 
 // Mining returns true if client is actively mining new blocks.
 func (mc *MoacAPI) Mining() (bool, error) {
-	req := mc.requestManager.newRequest("mc_mining")
-	resp, err := mc.requestManager.send(req)
+	req := mc.requestManager.NewRequest("mc_mining")
+	resp, err := mc.requestManager.Send(req)
 	if err != nil {
 		return false, err
 	}
@@ -186,8 +186,8 @@ func (mc *MoacAPI) Mining() (bool, error) {
 // HashRate returns the number of hashes per second that the node is mining
 // with.
 func (mc *MoacAPI) HashRate() (uint64, error) {
-	req := mc.requestManager.newRequest("mc_hashrate")
-	resp, err := mc.requestManager.send(req)
+	req := mc.requestManager.NewRequest("mc_hashrate")
+	resp, err := mc.requestManager.Send(req)
 	if err != nil {
 		return 0, err
 	}
@@ -205,8 +205,8 @@ func (mc *MoacAPI) HashRate() (uint64, error) {
 
 // GasPrice returns the current price per gas in wei.
 func (mc *MoacAPI) GasPrice() (result *big.Int, err error) {
-	req := mc.requestManager.newRequest("mc_gasPrice")
-	resp, err := mc.requestManager.send(req)
+	req := mc.requestManager.NewRequest("mc_gasPrice")
+	resp, err := mc.requestManager.Send(req)
 	if err != nil {
 		return nil, err
 	}
@@ -225,8 +225,8 @@ func (mc *MoacAPI) GasPrice() (result *big.Int, err error) {
 
 // Accounts returns a list of addresses owned by client.
 func (mc *MoacAPI) Accounts() (addrs []common.Address, err error) {
-	req := mc.requestManager.newRequest("mc_accounts")
-	resp, err := mc.requestManager.send(req)
+	req := mc.requestManager.NewRequest("mc_accounts")
+	resp, err := mc.requestManager.Send(req)
 	if err != nil {
 		return nil, err
 	}
@@ -244,8 +244,8 @@ func (mc *MoacAPI) Accounts() (addrs []common.Address, err error) {
 
 // BlockNumber returns the number of most recent block.
 func (mc *MoacAPI) BlockNumber() (result *big.Int, err error) {
-	req := mc.requestManager.newRequest("mc_blockNumber")
-	resp, err := mc.requestManager.send(req)
+	req := mc.requestManager.NewRequest("mc_blockNumber")
+	resp, err := mc.requestManager.Send(req)
 	if err != nil {
 		return nil, err
 	}
@@ -264,9 +264,9 @@ func (mc *MoacAPI) BlockNumber() (result *big.Int, err error) {
 
 // GetBalance returns the balance of the account of given address.
 func (mc *MoacAPI) GetBalance(address common.Address, quantity string) (result *big.Int, err error) {
-	req := mc.requestManager.newRequest("mc_getBalance")
+	req := mc.requestManager.NewRequest("mc_getBalance")
 	req.Set("params", []string{address.String(), quantity})
-	resp, err := mc.requestManager.send(req)
+	resp, err := mc.requestManager.Send(req)
 	if err != nil {
 		return nil, err
 	}
@@ -285,9 +285,9 @@ func (mc *MoacAPI) GetBalance(address common.Address, quantity string) (result *
 
 // GetStorageAt returns the value from a storage position at a given address.
 func (mc *MoacAPI) GetStorageAt(address common.Address, position uint64, quantity string) (uint64, error) {
-	req := mc.requestManager.newRequest("mc_getStorageAt")
+	req := mc.requestManager.NewRequest("mc_getStorageAt")
 	req.Set("params", []string{address.String(), fmt.Sprintf("%v", position), quantity})
-	resp, err := mc.requestManager.send(req)
+	resp, err := mc.requestManager.Send(req)
 	if err != nil {
 		return 0, err
 	}
@@ -305,9 +305,9 @@ func (mc *MoacAPI) GetStorageAt(address common.Address, position uint64, quantit
 
 // GetTransactionCount returns the number of transactions sent from an address.
 func (mc *MoacAPI) GetTransactionCount(address common.Address, quantity string) (result *big.Int, err error) {
-	req := mc.requestManager.newRequest("mc_getTransactionCount")
+	req := mc.requestManager.NewRequest("mc_getTransactionCount")
 	req.Set("params", []string{address.String(), quantity})
-	resp, err := mc.requestManager.send(req)
+	resp, err := mc.requestManager.Send(req)
 	if err != nil {
 		return nil, err
 	}
@@ -327,9 +327,9 @@ func (mc *MoacAPI) GetTransactionCount(address common.Address, quantity string) 
 // GetBlockTransactionCountByHash returns the number of transactions in a block
 // from a block matching the given block hash.
 func (mc *MoacAPI) GetBlockTransactionCountByHash(hash common.Hash) (result *big.Int, err error) {
-	req := mc.requestManager.newRequest("mc_getBlockTransactionCountByHash")
+	req := mc.requestManager.NewRequest("mc_getBlockTransactionCountByHash")
 	req.Set("params", hash.String())
-	resp, err := mc.requestManager.send(req)
+	resp, err := mc.requestManager.Send(req)
 	if err != nil {
 		return nil, err
 	}
@@ -349,9 +349,9 @@ func (mc *MoacAPI) GetBlockTransactionCountByHash(hash common.Hash) (result *big
 // GetBlockTransactionCountByNumber returns the number of transactions in a
 // block from a block matching the given block number.
 func (mc *MoacAPI) GetBlockTransactionCountByNumber(quantity string) (result *big.Int, err error) {
-	req := mc.requestManager.newRequest("mc_getBlockTransactionCountByNumber")
+	req := mc.requestManager.NewRequest("mc_getBlockTransactionCountByNumber")
 	req.Set("params", quantity)
-	resp, err := mc.requestManager.send(req)
+	resp, err := mc.requestManager.Send(req)
 	if err != nil {
 		return nil, err
 	}
@@ -371,9 +371,9 @@ func (mc *MoacAPI) GetBlockTransactionCountByNumber(quantity string) (result *bi
 // GetUncleCountByBlockHash returns the number of uncles in a block from a block
 // matching the given block hash.
 func (mc *MoacAPI) GetUncleCountByBlockHash(hash common.Hash) (result *big.Int, err error) {
-	req := mc.requestManager.newRequest("mc_getUncleCountByBlockHash")
+	req := mc.requestManager.NewRequest("mc_getUncleCountByBlockHash")
 	req.Set("params", hash.String())
-	resp, err := mc.requestManager.send(req)
+	resp, err := mc.requestManager.Send(req)
 	if err != nil {
 		return nil, err
 	}
@@ -393,9 +393,9 @@ func (mc *MoacAPI) GetUncleCountByBlockHash(hash common.Hash) (result *big.Int, 
 // GetUncleCountByBlockNumber returns the number of uncles in a block from a
 // block matching the given block number.
 func (mc *MoacAPI) GetUncleCountByBlockNumber(quantity string) (result *big.Int, err error) {
-	req := mc.requestManager.newRequest("mc_getUncleCountByBlockNumber")
+	req := mc.requestManager.NewRequest("mc_getUncleCountByBlockNumber")
 	req.Set("params", quantity)
-	resp, err := mc.requestManager.send(req)
+	resp, err := mc.requestManager.Send(req)
 	if err != nil {
 		return nil, err
 	}
@@ -414,9 +414,9 @@ func (mc *MoacAPI) GetUncleCountByBlockNumber(quantity string) (result *big.Int,
 
 // GetCode returns code at a given address.
 func (mc *MoacAPI) GetCode(address common.Address, quantity string) ([]byte, error) {
-	req := mc.requestManager.newRequest("mc_getCode")
+	req := mc.requestManager.NewRequest("mc_getCode")
 	req.Set("params", []string{address.String(), quantity})
-	resp, err := mc.requestManager.send(req)
+	resp, err := mc.requestManager.Send(req)
 	if err != nil {
 		return nil, err
 	}
@@ -430,9 +430,9 @@ func (mc *MoacAPI) GetCode(address common.Address, quantity string) ([]byte, err
 
 // Sign signs data with a given address.
 func (mc *MoacAPI) Sign(address common.Address, data []byte) ([]byte, error) {
-	req := mc.requestManager.newRequest("mc_sign")
+	req := mc.requestManager.NewRequest("mc_sign")
 	req.Set("params", []string{address.String(), string(data)})
-	resp, err := mc.requestManager.send(req)
+	resp, err := mc.requestManager.Send(req)
 	if err != nil {
 		return nil, err
 	}
@@ -447,9 +447,9 @@ func (mc *MoacAPI) Sign(address common.Address, data []byte) ([]byte, error) {
 // SendTransaction creates new message call transaction or a contract creation,
 // if the data field contains code.
 func (mc *MoacAPI) SendTransaction(tx *common.TransactionRequest) (hash common.Hash, err error) {
-	req := mc.requestManager.newRequest("mc_sendTransaction")
+	req := mc.requestManager.NewRequest("mc_sendTransaction")
 	req.Set("params", []string{tx.String()})
-	resp, err := mc.requestManager.send(req)
+	resp, err := mc.requestManager.Send(req)
 	if err != nil {
 		return common.NewHash(nil), err
 	}
@@ -464,9 +464,9 @@ func (mc *MoacAPI) SendTransaction(tx *common.TransactionRequest) (hash common.H
 // SendRawTransaction creates new message call transaction or a contract
 // creation for signed transactions.
 func (mc *MoacAPI) SendRawTransaction(tx []byte) (hash common.Hash, err error) {
-	req := mc.requestManager.newRequest("mc_sendRawTransaction")
+	req := mc.requestManager.NewRequest("mc_sendRawTransaction")
 	req.Set("params", []string{common.BytesToHex(tx)})
-	resp, err := mc.requestManager.send(req)
+	resp, err := mc.requestManager.Send(req)
 	if err != nil {
 		return common.NewHash(nil), err
 	}
@@ -481,9 +481,9 @@ func (mc *MoacAPI) SendRawTransaction(tx []byte) (hash common.Hash, err error) {
 // Call executes a new message call immediately without creating a transaction
 // on the block chain.
 func (mc *MoacAPI) Call(tx *common.TransactionRequest, quantity string) ([]byte, error) {
-	req := mc.requestManager.newRequest("mc_call")
+	req := mc.requestManager.NewRequest("mc_call")
 	req.Set("params", []string{tx.String(), quantity})
-	resp, err := mc.requestManager.send(req)
+	resp, err := mc.requestManager.Send(req)
 	if err != nil {
 		return nil, err
 	}
@@ -499,9 +499,9 @@ func (mc *MoacAPI) Call(tx *common.TransactionRequest, quantity string) ([]byte,
 // blockchain and returns the used gas, which can be used for estimating the
 // used gas.
 func (mc *MoacAPI) EstimateGas(tx *common.TransactionRequest, quantity string) (result *big.Int, err error) {
-	req := mc.requestManager.newRequest("mc_estimateGas")
+	req := mc.requestManager.NewRequest("mc_estimateGas")
 	req.Set("params", []string{tx.String(), quantity})
-	resp, err := mc.requestManager.send(req)
+	resp, err := mc.requestManager.Send(req)
 	if err != nil {
 		return nil, err
 	}
@@ -520,9 +520,9 @@ func (mc *MoacAPI) EstimateGas(tx *common.TransactionRequest, quantity string) (
 
 // GetBlockByHash returns information about a block by hash.
 func (mc *MoacAPI) GetBlockByHash(hash common.Hash, full bool) (*common.Block, error) {
-	req := mc.requestManager.newRequest("mc_getBlockByHash")
+	req := mc.requestManager.NewRequest("mc_getBlockByHash")
 	req.Set("params", []interface{}{hash.String(), full})
-	resp, err := mc.requestManager.send(req)
+	resp, err := mc.requestManager.Send(req)
 	if err != nil {
 		return nil, err
 	}
@@ -531,7 +531,7 @@ func (mc *MoacAPI) GetBlockByHash(hash common.Hash, full bool) (*common.Block, e
 		return nil, resp.Error()
 	}
 
-	result := &jsonBlock{}
+	result := &JSONBlock{}
 	if jsonBytes, err := json.Marshal(resp.Get("result")); err == nil {
 		if err := json.Unmarshal(jsonBytes, result); err == nil {
 			return result.ToBlock(), nil
@@ -543,9 +543,9 @@ func (mc *MoacAPI) GetBlockByHash(hash common.Hash, full bool) (*common.Block, e
 
 // GetBlockByNumber returns information about a block by block number.
 func (mc *MoacAPI) GetBlockByNumber(quantity string, full bool) (*common.Block, error) {
-	req := mc.requestManager.newRequest("mc_getBlockByNumber")
+	req := mc.requestManager.NewRequest("mc_getBlockByNumber")
 	req.Set("params", []interface{}{quantity, full})
-	resp, err := mc.requestManager.send(req)
+	resp, err := mc.requestManager.Send(req)
 	if err != nil {
 		return nil, err
 	}
@@ -554,7 +554,7 @@ func (mc *MoacAPI) GetBlockByNumber(quantity string, full bool) (*common.Block, 
 		return nil, resp.Error()
 	}
 
-	result := &jsonBlock{}
+	result := &JSONBlock{}
 	if jsonBytes, err := json.Marshal(resp.Get("result")); err == nil {
 		if err := json.Unmarshal(jsonBytes, result); err == nil {
 			return result.ToBlock(), nil
@@ -567,9 +567,9 @@ func (mc *MoacAPI) GetBlockByNumber(quantity string, full bool) (*common.Block, 
 // GetTransactionByHash returns the information about a transaction requested by
 // transaction hash.
 func (mc *MoacAPI) GetTransactionByHash(hash common.Hash) (*common.Transaction, error) {
-	req := mc.requestManager.newRequest("mc_getTransactionByHash")
+	req := mc.requestManager.NewRequest("mc_getTransactionByHash")
 	req.Set("params", hash.String())
-	resp, err := mc.requestManager.send(req)
+	resp, err := mc.requestManager.Send(req)
 	if err != nil {
 		return nil, err
 	}
@@ -578,7 +578,7 @@ func (mc *MoacAPI) GetTransactionByHash(hash common.Hash) (*common.Transaction, 
 		return nil, resp.Error()
 	}
 
-	result := &jsonTransaction{}
+	result := &JSONTransaction{}
 	if jsonBytes, err := json.Marshal(resp.Get("result")); err == nil {
 		if err := json.Unmarshal(jsonBytes, result); err == nil {
 			return result.ToTransaction(), nil
@@ -591,9 +591,9 @@ func (mc *MoacAPI) GetTransactionByHash(hash common.Hash) (*common.Transaction, 
 // GetTransactionByBlockHashAndIndex returns information about a transaction by
 // block hash and transaction index position.
 func (mc *MoacAPI) GetTransactionByBlockHashAndIndex(hash common.Hash, index uint64) (*common.Transaction, error) {
-	req := mc.requestManager.newRequest("mc_getTransactionByBlockHashAndIndex")
+	req := mc.requestManager.NewRequest("mc_getTransactionByBlockHashAndIndex")
 	req.Set("params", []string{hash.String(), fmt.Sprintf("%v", index)})
-	resp, err := mc.requestManager.send(req)
+	resp, err := mc.requestManager.Send(req)
 	if err != nil {
 		return nil, err
 	}
@@ -602,7 +602,7 @@ func (mc *MoacAPI) GetTransactionByBlockHashAndIndex(hash common.Hash, index uin
 		return nil, resp.Error()
 	}
 
-	result := &jsonTransaction{}
+	result := &JSONTransaction{}
 	if jsonBytes, err := json.Marshal(resp.Get("result")); err == nil {
 		if err := json.Unmarshal(jsonBytes, result); err == nil {
 			return result.ToTransaction(), nil
@@ -615,9 +615,9 @@ func (mc *MoacAPI) GetTransactionByBlockHashAndIndex(hash common.Hash, index uin
 // GetTransactionByBlockNumberAndIndex returns information about a transaction
 // by block number and transaction index position.
 func (mc *MoacAPI) GetTransactionByBlockNumberAndIndex(quantity string, index uint64) (*common.Transaction, error) {
-	req := mc.requestManager.newRequest("mc_getTransactionByBlockNumberAndIndex")
+	req := mc.requestManager.NewRequest("mc_getTransactionByBlockNumberAndIndex")
 	req.Set("params", []string{quantity, fmt.Sprintf("%v", index)})
-	resp, err := mc.requestManager.send(req)
+	resp, err := mc.requestManager.Send(req)
 	if err != nil {
 		return nil, err
 	}
@@ -626,7 +626,7 @@ func (mc *MoacAPI) GetTransactionByBlockNumberAndIndex(quantity string, index ui
 		return nil, resp.Error()
 	}
 
-	result := &jsonTransaction{}
+	result := &JSONTransaction{}
 	if jsonBytes, err := json.Marshal(resp.Get("result")); err == nil {
 		if err := json.Unmarshal(jsonBytes, result); err == nil {
 			return result.ToTransaction(), nil
@@ -638,9 +638,9 @@ func (mc *MoacAPI) GetTransactionByBlockNumberAndIndex(quantity string, index ui
 
 // GetTransactionReceipt Returns the receipt of a transaction by transaction hash.
 func (mc *MoacAPI) GetTransactionReceipt(hash common.Hash) (*common.TransactionReceipt, error) {
-	req := mc.requestManager.newRequest("mc_getTransactionReceipt")
+	req := mc.requestManager.NewRequest("mc_getTransactionReceipt")
 	req.Set("params", hash.String())
-	resp, err := mc.requestManager.send(req)
+	resp, err := mc.requestManager.Send(req)
 	if err != nil {
 		return nil, err
 	}
@@ -649,7 +649,7 @@ func (mc *MoacAPI) GetTransactionReceipt(hash common.Hash) (*common.TransactionR
 		return nil, resp.Error()
 	}
 
-	result := &jsonTransactionReceipt{}
+	result := &JSONTransactionReceipt{}
 	if jsonBytes, err := json.Marshal(resp.Get("result")); err == nil {
 		if err := json.Unmarshal(jsonBytes, result); err == nil {
 			return result.ToTransactionReceipt(), nil
@@ -662,9 +662,9 @@ func (mc *MoacAPI) GetTransactionReceipt(hash common.Hash) (*common.TransactionR
 // GetUncleByBlockHashAndIndex returns information about a uncle of a block by
 // hash and uncle index position.
 func (mc *MoacAPI) GetUncleByBlockHashAndIndex(hash common.Hash, index uint64) (*common.Block, error) {
-	req := mc.requestManager.newRequest("mc_getUncleByBlockHashAndIndex")
+	req := mc.requestManager.NewRequest("mc_getUncleByBlockHashAndIndex")
 	req.Set("params", []string{hash.String(), fmt.Sprintf("%d", index)})
-	resp, err := mc.requestManager.send(req)
+	resp, err := mc.requestManager.Send(req)
 	if err != nil {
 		return nil, err
 	}
@@ -673,7 +673,7 @@ func (mc *MoacAPI) GetUncleByBlockHashAndIndex(hash common.Hash, index uint64) (
 		return nil, resp.Error()
 	}
 
-	result := &jsonBlock{}
+	result := &JSONBlock{}
 	if jsonBytes, err := json.Marshal(resp.Get("result")); err == nil {
 		if err := json.Unmarshal(jsonBytes, result); err == nil {
 			return result.ToBlock(), nil
@@ -686,9 +686,9 @@ func (mc *MoacAPI) GetUncleByBlockHashAndIndex(hash common.Hash, index uint64) (
 // GetUncleByBlockNumberAndIndex returns information about a uncle of a block by
 // number and uncle index position.
 func (mc *MoacAPI) GetUncleByBlockNumberAndIndex(quantity string, index uint64) (*common.Block, error) {
-	req := mc.requestManager.newRequest("mc_getUncleByBlockNumberAndIndex")
+	req := mc.requestManager.NewRequest("mc_getUncleByBlockNumberAndIndex")
 	req.Set("params", []string{quantity, fmt.Sprintf("%d", index)})
-	resp, err := mc.requestManager.send(req)
+	resp, err := mc.requestManager.Send(req)
 	if err != nil {
 		return nil, err
 	}
@@ -697,7 +697,7 @@ func (mc *MoacAPI) GetUncleByBlockNumberAndIndex(quantity string, index uint64) 
 		return nil, resp.Error()
 	}
 
-	result := &jsonBlock{}
+	result := &JSONBlock{}
 	if jsonBytes, err := json.Marshal(resp.Get("result")); err == nil {
 		if err := json.Unmarshal(jsonBytes, result); err == nil {
 			return result.ToBlock(), nil
@@ -709,8 +709,8 @@ func (mc *MoacAPI) GetUncleByBlockNumberAndIndex(quantity string, index uint64) 
 
 // GetCompilers returns a list of available compilers in the client.
 func (mc *MoacAPI) GetCompilers() (result []string, err error) {
-	req := mc.requestManager.newRequest("mc_getCompilers")
-	resp, err := mc.requestManager.send(req)
+	req := mc.requestManager.NewRequest("mc_getCompilers")
+	resp, err := mc.requestManager.Send(req)
 	if err != nil {
 		return nil, err
 	}
@@ -729,12 +729,12 @@ func (mc *MoacAPI) GetCompilers() (result []string, err error) {
 // the state changes (logs). To check if the state has changed, call
 // mc_getFilterChanges.
 func (mc *MoacAPI) NewFilter(option *FilterOption) (Filter, error) {
-	req := mc.requestManager.newRequest("mc_newFilter")
+	req := mc.requestManager.NewRequest("mc_newFilter")
 	if option == nil {
 		option = &FilterOption{}
 	}
 	req.Set("params", option)
-	resp, err := mc.requestManager.send(req)
+	resp, err := mc.requestManager.Send(req)
 	if err != nil {
 		return nil, err
 	}
@@ -750,8 +750,8 @@ func (mc *MoacAPI) NewFilter(option *FilterOption) (Filter, error) {
 // NewBlockFilter creates a filter in the node, to notify when a new block
 // arrives. To check if the state has changed, call mc_getFilterChanges.
 func (mc *MoacAPI) NewBlockFilter() (Filter, error) {
-	req := mc.requestManager.newRequest("mc_newBlockFilter")
-	resp, err := mc.requestManager.send(req)
+	req := mc.requestManager.NewRequest("mc_newBlockFilter")
+	resp, err := mc.requestManager.Send(req)
 	if err != nil {
 		return nil, err
 	}
@@ -768,8 +768,8 @@ func (mc *MoacAPI) NewBlockFilter() (Filter, error) {
 // pending transactions arrive. To check if the state has changed, call
 // mc_getFilterChanges.
 func (mc *MoacAPI) NewPendingTransactionFilter() (Filter, error) {
-	req := mc.requestManager.newRequest("mc_newPendingTransactionFilter")
-	resp, err := mc.requestManager.send(req)
+	req := mc.requestManager.NewRequest("mc_newPendingTransactionFilter")
+	resp, err := mc.requestManager.Send(req)
 	if err != nil {
 		return nil, err
 	}
@@ -786,9 +786,9 @@ func (mc *MoacAPI) NewPendingTransactionFilter() (Filter, error) {
 // when watch is no longer needed. Additonally Filters timeout when they aren't
 // requested with mc_getFilterChanges for a period of time.
 func (mc *MoacAPI) UninstallFilter(filter Filter) (bool, error) {
-	req := mc.requestManager.newRequest("mc_uninstallFilter")
+	req := mc.requestManager.NewRequest("mc_uninstallFilter")
 	req.Set("params", filter.ID())
-	resp, err := mc.requestManager.send(req)
+	resp, err := mc.requestManager.Send(req)
 	if err != nil {
 		return false, err
 	}
@@ -803,9 +803,9 @@ func (mc *MoacAPI) UninstallFilter(filter Filter) (bool, error) {
 // GetFilterChanges polling mmcod for a filter, which returns an array of logs
 // which occurred since last poll.
 func (mc *MoacAPI) GetFilterChanges(filter Filter) (result []interface{}, err error) {
-	req := mc.requestManager.newRequest("mc_getFilterChanges")
+	req := mc.requestManager.NewRequest("mc_getFilterChanges")
 	req.Set("params", filter.ID())
-	resp, err := mc.requestManager.send(req)
+	resp, err := mc.requestManager.Send(req)
 	if err != nil {
 		return nil, err
 	}
@@ -819,9 +819,9 @@ func (mc *MoacAPI) GetFilterChanges(filter Filter) (result []interface{}, err er
 
 // GetFilterLogs returns an array of all logs matching filter with given id.
 func (mc *MoacAPI) GetFilterLogs(filter Filter) (result []interface{}, err error) {
-	req := mc.requestManager.newRequest("mc_getFilterLogs")
+	req := mc.requestManager.NewRequest("mc_getFilterLogs")
 	req.Set("params", filter.ID())
-	resp, err := mc.requestManager.send(req)
+	resp, err := mc.requestManager.Send(req)
 	if err != nil {
 		return nil, err
 	}
@@ -835,9 +835,9 @@ func (mc *MoacAPI) GetFilterLogs(filter Filter) (result []interface{}, err error
 
 // GetLogs returns an array of all logs matching a given filter object.
 func (mc *MoacAPI) GetLogs(filter Filter) (result []interface{}, err error) {
-	req := mc.requestManager.newRequest("mc_getLogs")
+	req := mc.requestManager.NewRequest("mc_getLogs")
 	req.Set("params", filter.ID())
-	resp, err := mc.requestManager.send(req)
+	resp, err := mc.requestManager.Send(req)
 	if err != nil {
 		return nil, err
 	}
@@ -852,8 +852,8 @@ func (mc *MoacAPI) GetLogs(filter Filter) (result []interface{}, err error) {
 // GetWork returns the hash of the current block, the seedHash, and the boundary
 // condition to be met ("target").
 func (mc *MoacAPI) GetWork() (header, seed, boundary common.Hash, err error) {
-	req := mc.requestManager.newRequest("mc_getWork")
-	resp, err := mc.requestManager.send(req)
+	req := mc.requestManager.NewRequest("mc_getWork")
+	resp, err := mc.requestManager.Send(req)
 	if err != nil {
 		return common.NewHash(nil), common.NewHash(nil), common.NewHash(nil), err
 	}
@@ -871,13 +871,13 @@ func (mc *MoacAPI) GetWork() (header, seed, boundary common.Hash, err error) {
 
 // SubmitWork is used for submitting a proof-of-work solution.
 func (mc *MoacAPI) SubmitWork(nonce uint64, header, mixDigest common.Hash) (bool, error) {
-	req := mc.requestManager.newRequest("mc_submitWork")
+	req := mc.requestManager.NewRequest("mc_submitWork")
 	req.Set("params", []string{
 		fmt.Sprintf("0x%16x", nonce),
 		header.String(),
 		mixDigest.String(),
 	})
-	resp, err := mc.requestManager.send(req)
+	resp, err := mc.requestManager.Send(req)
 	if err != nil {
 		return false, err
 	}

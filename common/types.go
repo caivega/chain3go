@@ -42,8 +42,8 @@ const (
 // Hash ...
 type Hash [hashLength]byte
 
-func NewHash(data []byte) (result Hash) {
-	copy(result[:], data)
+func NewHash(bytes []byte) (result Hash) {
+	copy(result[:], bytes)
 	return result
 }
 
@@ -51,11 +51,23 @@ func (hash *Hash) String() string {
 	return BytesToHex(hash[:])
 }
 
+// Data ...
+type Data []byte
+
+func NewData(bytes []byte) (data Data) {
+	copy(data[:], bytes)
+	return data
+}
+
+func (data *Data) String() string {
+	return BytesToHex((*data)[:])
+}
+
 // Address ...
 type Address [addressLength]byte
 
-func NewAddress(data []byte) (result Address) {
-	copy(result[:], data)
+func NewAddress(bytes []byte) (result Address) {
+	copy(result[:], bytes)
 	return result
 }
 
@@ -88,17 +100,22 @@ func (tx *TransactionRequest) String() string {
 
 // Transaction ...
 type Transaction struct {
-	Hash             Hash     `json:"hash"`
-	Nonce            Hash     `json:"nonce"`
 	BlockHash        Hash     `json:"blockHash"`
 	BlockNumber      *big.Int `json:"blockNumber"`
-	TransactionIndex uint64   `json:"transactionIndex"`
 	From             Address  `json:"from"`
-	To               Address  `json:"to"`
 	Gas              *big.Int `json:"gas"`
 	GasPrice         *big.Int `json:"gasprice"`
+	Hash             Hash     `json:"hash"`
+	Input            Data     `json:"input"`
+	Nonce            *big.Int `json:"nonce"`
+	R                Data     `json:"r"`
+	S                Data     `json:"s"`
+	ShardingFlag     Data     `json:"shardingFlag"`
+	SysCnt           Data     `json:"syscnt"`
+	To               Address  `json:"to"`
+	TransactionIndex *big.Int `json:"transactionIndex"`
+	V                Data     `json:"v"`
 	Value            *big.Int `json:"value"`
-	Data             []byte   `json:"input"`
 }
 
 func (tx *Transaction) String() string {
@@ -106,34 +123,33 @@ func (tx *Transaction) String() string {
 	return string(jsonBytes)
 }
 
-type Topic struct {
-	Data []byte
-}
-
-type Topics []Topic
-
 // Log ...
 type Log struct {
-	LogIndex         uint64   `json:"logIndex"`
-	BlockNumber      *big.Int `json:"blockNumber"`
-	BlockHash        Hash     `json:"blockHash"`
-	TransactionHash  Hash     `json:"transactionHash"`
-	TransactionIndex uint64   `json:"transactionIndex"`
+	TxData           Data     `json:"TxData"`
 	Address          Address  `json:"address"`
-	Data             []byte   `json:"data"`
-	Topics           Topics   `json:"topics"`
+	BlockHash        Hash     `json:"blockHash"`
+	BlockNumber      *big.Int `json:"blockNumber"`
+	LogIndex         *big.Int `json:"logIndex"`
+	Removed          bool     `json:"removed"`
+	Topics           []Data   `json:"topics"`
+	TransactionHash  Hash     `json:"transactionHash"`
+	TransactionIndex *big.Int `json:"transactionIndex"`
 }
 
 // TransactionReceipt ...
 type TransactionReceipt struct {
-	Hash              Hash     `json:"transactionHash"`
-	TransactionIndex  uint64   `json:"transactionIndex"`
-	BlockNumber       *big.Int `json:"blockNumber"`
 	BlockHash         Hash     `json:"blockHash"`
-	CumulativeGasUsed *big.Int `json:"cumulativeGasUsed"`
-	GasUsed           *big.Int `json:"gasUsed"`
+	BlockNumber       *big.Int `json:"blockNumber"`
 	ContractAddress   Address  `json:"contractAddress"`
+	CumulativeGasUsed *big.Int `json:"cumulativeGasUsed"`
+	From              Address  `json:"from"`
+	GasUsed           *big.Int `json:"gasUsed"`
 	Logs              []Log    `json:"logs"`
+	LogsBloom         Data     `json:"logsBloom"`
+	Root              Data     `json:"root"`
+	To                Address  `json:"to"`
+	TransactionHash   Hash     `json:"transactionHash"`
+	TransactionIndex  *big.Int `json:"transactionIndex"`
 }
 
 func (tx *TransactionReceipt) String() string {
@@ -143,23 +159,24 @@ func (tx *TransactionReceipt) String() string {
 
 // Block ...
 type Block struct {
-	Number          *big.Int `json:"number"`
-	Hash            Hash     `json:"hash"`
-	ParentHash      Hash     `json:"parentHash"`
-	Nonce           Hash     `json:"nonce"`
-	Sha3Uncles      Hash     `json:"sha3Uncles"`
-	Bloom           Hash     `json:"logsBloom"`
-	TransactionRoot Hash     `json:"transactionsRoot"`
-	StateRoot       Hash     `json:"stateRoot"`
-	Miner           Address  `json:"miner"`
-	Difficulty      *big.Int `json:"difficulty"`
-	TotalDifficulty *big.Int `json:"totalDifficulty"`
-	ExtraData       Hash     `json:"extraData"`
-	Size            *big.Int `json:"size"`
-	GasLimit        *big.Int `json:"gasLimit"`
-	GasUsed         *big.Int `json:"gasUsed"`
-	Timestamp       *big.Int `json:"timestamp"`
-	Transactions    []Hash   `json:"transactions"`
-	Uncles          []Hash   `json:"uncles"`
-	//MinGasPrice     *big.Int `json:"minGasPrice"`
+	Difficulty       *big.Int `json:"difficulty"`
+	ExtraData        Data     `json:"extraData"`
+	GasLimit         *big.Int `json:"gasLimit"`
+	GasUsed          *big.Int `json:"gasUsed"`
+	Hash             Hash     `json:"hash"`
+	LogsBloom        Data     `json:"logsBloom"`
+	Miner            Address  `json:"miner"`
+	MixHash          Hash     `json:"mixHash"`
+	Nonce            Data     `json:"nonce"`
+	Number           *big.Int `json:"number"`
+	ParentHash       Hash     `json:"parentHash"`
+	ReceiptsRoot     Hash     `json:"receiptsRoot"`
+	Sha3Uncles       Hash     `json:"sha3Uncles"`
+	Size             *big.Int `json:"size"`
+	StateRoot        Hash     `json:"stateRoot"`
+	Timestamp        *big.Int `json:"timestamp"`
+	TotalDifficulty  *big.Int `json:"totalDifficulty"`
+	Transactions     []Hash   `json:"transactions"`
+	TransactionsRoot Hash     `json:"transactionsRoot"`
+	Uncles           []Hash   `json:"uncles"`
 }

@@ -79,14 +79,14 @@ var (
 // See https://github.com/ethereum/wiki/wiki/JavaScript-API#web3js-api-reference
 type Chain3 struct {
 	provider       provider.Provider
-	requestManager *requestManager
+	requestManager *RequestManager
 	Mc             Mc
 	Net            Net
 }
 
 // NewChain3 creates a new chain3 object.
 func NewChain3(provider provider.Provider) *Chain3 {
-	requestManager := newRequestManager(provider)
+	requestManager := NewRequestManager(provider)
 	return &Chain3{
 		provider:       provider,
 		requestManager: requestManager,
@@ -107,6 +107,10 @@ func (chain3 *Chain3) SetProvider(provider provider.Provider) {
 // CurrentProvider returns the current provider.
 func (chain3 *Chain3) CurrentProvider() provider.Provider {
 	return chain3.provider
+}
+
+func (chain3 *Chain3) CurrentRequestManager() *RequestManager {
+	return chain3.requestManager
 }
 
 // Reset state of chain3. Resets everything except manager. Uninstalls all

@@ -36,134 +36,176 @@ import (
 	"github.com/caivega/chain3go/common"
 )
 
-type jsonBlock struct {
-	Number          json.Number    `json:"number"`
-	Hash            common.Hash    `json:"hash"`
-	ParentHash      common.Hash    `json:"parentHash"`
-	Nonce           common.Hash    `json:"nonce"`
-	Sha3Uncles      common.Hash    `json:"sha3Uncles"`
-	Bloom           common.Hash    `json:"logsBloom"`
-	TransactionRoot common.Hash    `json:"transactionsRoot"`
-	StateRoot       common.Hash    `json:"stateRoot"`
-	Miner           common.Address `json:"miner"`
-	Difficulty      json.Number    `json:"difficulty"`
-	TotalDifficulty json.Number    `json:"totalDifficulty"`
-	ExtraData       common.Hash    `json:"extraData"`
-	Size            json.Number    `json:"size"`
-	GasLimit        json.Number    `json:"gasLimit"`
-	GasUsed         json.Number    `json:"gasUsed"`
-	Timestamp       json.Number    `json:"timestamp"`
-	Transactions    []common.Hash  `json:"transactions"`
-	Uncles          []common.Hash  `json:"uncles"`
+type JSONBlock struct {
+	Difficulty       json.Number `json:"difficulty"`
+	ExtraData        string      `json:"extraData"`
+	GasLimit         json.Number `json:"gasLimit"`
+	GasUsed          json.Number `json:"gasUsed"`
+	Hash             string      `json:"hash"`
+	LogsBloom        string      `json:"logsBloom"`
+	Miner            string      `json:"miner"`
+	MixHash          string      `json:"mixHash"`
+	Nonce            string      `json:"nonce"`
+	Number           json.Number `json:"number"`
+	ParentHash       string      `json:"parentHash"`
+	ReceiptsRoot     string      `json:"receiptsRoot"`
+	Sha3Uncles       string      `json:"sha3Uncles"`
+	Size             json.Number `json:"size"`
+	StateRoot        string      `json:"stateRoot"`
+	Timestamp        json.Number `json:"timestamp"`
+	TotalDifficulty  json.Number `json:"totalDifficulty"`
+	Transactions     []string    `json:"transactions"`
+	TransactionsRoot string      `json:"transactionsRoot"`
+	Uncles           []string    `json:"uncles"`
 }
 
-func (b *jsonBlock) ToBlock() (block *common.Block) {
+func (b *JSONBlock) ToBlock() (block *common.Block) {
 	block = &common.Block{}
-	block.Number = jsonNumbertoInt(b.Number)
-	block.Hash = b.Hash
-	block.ParentHash = b.ParentHash
-	block.Nonce = b.Nonce
-	block.Sha3Uncles = b.Sha3Uncles
-	block.Bloom = b.Bloom
-	block.TransactionRoot = b.TransactionRoot
-	block.StateRoot = b.StateRoot
-	block.Miner = b.Miner
-	block.Difficulty = jsonNumbertoInt(b.Difficulty)
-	block.TotalDifficulty = jsonNumbertoInt(b.TotalDifficulty)
-	block.ExtraData = b.ExtraData
-	block.Size = jsonNumbertoInt(b.Size)
-	block.GasLimit = jsonNumbertoInt(b.GasLimit)
-	block.GasUsed = jsonNumbertoInt(b.GasUsed)
-	block.Timestamp = jsonNumbertoInt(b.Timestamp)
-	block.Transactions = b.Transactions
-	block.Uncles = b.Uncles
+	block.Difficulty = toBigInt(b.Difficulty)
+	block.ExtraData = common.StringToData(b.ExtraData)
+	block.GasLimit = toBigInt(b.GasLimit)
+	block.GasUsed = toBigInt(b.GasUsed)
+	block.Hash = common.StringToHash(b.Hash)
+	block.LogsBloom = common.StringToData(b.LogsBloom)
+	block.Miner = common.StringToAddress(b.Miner)
+	block.MixHash = common.StringToHash(b.MixHash)
+	block.Nonce = common.StringToData(b.Nonce)
+	block.Number = toBigInt(b.Number)
+	block.ParentHash = common.StringToHash(b.ParentHash)
+	block.ReceiptsRoot = common.StringToHash(b.ReceiptsRoot)
+	block.Sha3Uncles = common.StringToHash(b.Sha3Uncles)
+	block.Size = toBigInt(b.Size)
+	block.StateRoot = common.StringToHash(b.StateRoot)
+	block.Timestamp = toBigInt(b.Timestamp)
+	block.TotalDifficulty = toBigInt(b.TotalDifficulty)
+	block.Transactions = toHashArray(b.Transactions)
+	block.TransactionsRoot = common.StringToHash(b.TransactionsRoot)
+	block.Uncles = toHashArray(b.Uncles)
 	return block
 }
 
-type jsonTransaction struct {
-	Hash             common.Hash    `json:"hash"`
-	Nonce            common.Hash    `json:"nonce"`
-	BlockHash        common.Hash    `json:"blockHash"`
-	BlockNumber      json.Number    `json:"blockNumber"`
-	TransactionIndex uint64         `json:"transactionIndex"`
-	From             common.Address `json:"from"`
-	To               common.Address `json:"to"`
-	Gas              json.Number    `json:"gas"`
-	GasPrice         json.Number    `json:"gasprice"`
-	Value            json.Number    `json:"value"`
-	Data             []byte         `json:"input"`
+type JSONTransaction struct {
+	BlockHash        string      `json:"blockHash"`
+	BlockNumber      json.Number `json:"blockNumber"`
+	From             string      `json:"from"`
+	Gas              json.Number `json:"gas"`
+	GasPrice         json.Number `json:"gasprice"`
+	Hash             string      `json:"hash"`
+	Input            string      `json:"input"`
+	Nonce            json.Number `json:"nonce"`
+	R                string      `json:"r"`
+	S                string      `json:"s"`
+	ShardingFlag     string      `json:"shardingFlag"`
+	SysCnt           string      `json:"syscnt"`
+	To               string      `json:"to"`
+	TransactionIndex json.Number `json:"transactionIndex"`
+	V                string      `json:"v"`
+	Value            json.Number `json:"value"`
 }
 
-func (t *jsonTransaction) ToTransaction() (tx *common.Transaction) {
+func (t *JSONTransaction) ToTransaction() (tx *common.Transaction) {
 	tx = &common.Transaction{}
-	tx.Hash = t.Hash
-	tx.Nonce = t.Nonce
-	tx.BlockHash = t.BlockHash
-	tx.BlockNumber = jsonNumbertoInt(t.BlockNumber)
-	tx.TransactionIndex = t.TransactionIndex
-	tx.From = t.From
-	tx.To = t.To
-	tx.Gas = jsonNumbertoInt(t.Gas)
-	tx.GasPrice = jsonNumbertoInt(t.GasPrice)
-	tx.Value = jsonNumbertoInt(t.Value)
-	tx.Data = t.Data
+	tx.BlockHash = common.StringToHash(t.BlockHash)
+	tx.BlockNumber = toBigInt(t.BlockNumber)
+	tx.From = common.StringToAddress(t.From)
+	tx.Gas = toBigInt(t.Gas)
+	tx.GasPrice = toBigInt(t.GasPrice)
+	tx.Hash = common.StringToHash(t.Hash)
+	tx.Input = common.StringToData(t.Input)
+	tx.Nonce = toBigInt(t.Nonce)
+	tx.R = common.StringToData(t.R)
+	tx.S = common.StringToData(t.S)
+	tx.ShardingFlag = common.StringToData(t.ShardingFlag)
+	tx.SysCnt = common.StringToData(t.SysCnt)
+	tx.To = common.StringToAddress(t.To)
+	tx.TransactionIndex = toBigInt(t.TransactionIndex)
+	tx.V = common.StringToData(t.V)
+	tx.Value = toBigInt(t.Value)
 	return tx
 }
 
-type jsonTransactionReceipt struct {
-	Hash              common.Hash    `json:"transactionHash"`
-	TransactionIndex  uint64         `json:"transactionIndex"`
-	BlockNumber       json.Number    `json:"blockNumber"`
-	BlockHash         common.Hash    `json:"blockHash"`
-	CumulativeGasUsed json.Number    `json:"cumulativeGasUsed"`
-	GasUsed           json.Number    `json:"gasUsed"`
-	ContractAddress   common.Address `json:"contractAddress"`
-	Logs              []jsonLog      `json:"logs"`
+type JSONTransactionReceipt struct {
+	BlockHash         string      `json:"blockHash"`
+	BlockNumber       json.Number `json:"blockNumber"`
+	ContractAddress   string      `json:"contractAddress"`
+	CumulativeGasUsed json.Number `json:"cumulativeGasUsed"`
+	From              string      `json:"from"`
+	GasUsed           json.Number `json:"gasUsed"`
+	Logs              []JSONLog   `json:"logs"`
+	LogsBloom         string      `json:"logsBloom"`
+	Root              string      `json:"root"`
+	To                string      `json:"to"`
+	TransactionHash   string      `json:"transactionHash"`
+	TransactionIndex  json.Number `json:"transactionIndex"`
 }
 
-func (r *jsonTransactionReceipt) ToTransactionReceipt() (receipt *common.TransactionReceipt) {
+func (r *JSONTransactionReceipt) ToTransactionReceipt() (receipt *common.TransactionReceipt) {
 	receipt = &common.TransactionReceipt{}
-	receipt.Hash = r.Hash
-	receipt.TransactionIndex = r.TransactionIndex
-	receipt.BlockNumber = jsonNumbertoInt(r.BlockNumber)
-	receipt.BlockHash = r.BlockHash
-	receipt.CumulativeGasUsed = jsonNumbertoInt(r.CumulativeGasUsed)
-	receipt.GasUsed = jsonNumbertoInt(r.GasUsed)
-	receipt.ContractAddress = r.ContractAddress
+	receipt.BlockHash = common.StringToHash(r.BlockHash)
+	receipt.BlockNumber = toBigInt(r.BlockNumber)
+	receipt.ContractAddress = common.StringToAddress(r.ContractAddress)
+	receipt.CumulativeGasUsed = toBigInt(r.CumulativeGasUsed)
+	receipt.From = common.StringToAddress(r.From)
+	receipt.GasUsed = toBigInt(r.GasUsed)
 	receipt.Logs = make([]common.Log, 0)
 	for _, l := range r.Logs {
 		receipt.Logs = append(receipt.Logs, l.ToLog())
 	}
+	receipt.LogsBloom = common.StringToData(r.LogsBloom)
+	receipt.Root = common.StringToData(r.Root)
+	receipt.To = common.StringToAddress(r.To)
+	receipt.TransactionHash = common.StringToHash(r.TransactionHash)
+	receipt.TransactionIndex = toBigInt(r.TransactionIndex)
 	return receipt
 }
 
-type jsonLog struct {
-	LogIndex         uint64         `json:"logIndex"`
-	BlockNumber      json.Number    `json:"blockNumber"`
-	BlockHash        common.Hash    `json:"blockHash"`
-	TransactionHash  common.Hash    `json:"transactionHash"`
-	TransactionIndex uint64         `json:"transactionIndex"`
-	Address          common.Address `json:"address"`
-	Data             []byte         `json:"data"`
-	Topics           common.Topics  `json:"topics"`
+type JSONLog struct {
+	TxData           string      `json:"TxData"`
+	Address          string      `json:"address"`
+	BlockHash        string      `json:"blockHash"`
+	BlockNumber      json.Number `json:"blockNumber"`
+	LogIndex         json.Number `json:"logIndex"`
+	Removed          bool        `json:"removed"`
+	Topics           []string    `json:"topics"`
+	TransactionHash  string      `json:"transactionHash"`
+	TransactionIndex json.Number `json:"transactionIndex"`
 }
 
-func (l jsonLog) ToLog() (log common.Log) {
+func (l JSONLog) ToLog() (log common.Log) {
 	log = common.Log{}
-	log.LogIndex = l.LogIndex
-	log.BlockNumber = jsonNumbertoInt(l.BlockNumber)
-	log.BlockHash = l.BlockHash
-	log.TransactionHash = l.TransactionHash
-	log.TransactionIndex = l.TransactionIndex
-	log.Address = l.Address
-	log.Data = l.Data
-	log.Topics = l.Topics
+	log.TxData = common.StringToData(l.TxData)
+	log.Address = common.StringToAddress(l.Address)
+	log.BlockHash = common.StringToHash(l.BlockHash)
+	log.BlockNumber = toBigInt(l.BlockNumber)
+	log.LogIndex = toBigInt(l.LogIndex)
+	log.Removed = l.Removed
+	log.Topics = toDataArray(l.Topics)
+	log.TransactionHash = common.StringToHash(l.TransactionHash)
+	log.TransactionIndex = toBigInt(l.TransactionIndex)
 	return log
 }
 
-func jsonNumbertoInt(data json.Number) *big.Int {
+func toBigInt(data json.Number) *big.Int {
 	f := big.NewFloat(0.0)
 	f.SetString(string(data))
 	result, _ := f.Int(nil)
 	return result
+}
+
+func toHashArray(list []string) []common.Hash {
+	c := len(list)
+	hashs := make([]common.Hash, c)
+	for i := 0; i < c; i++ {
+		hashs[i] = common.StringToHash(list[i])
+	}
+	return hashs
+}
+
+func toDataArray(list []string) []common.Data {
+	c := len(list)
+	hashs := make([]common.Data, c)
+	for i := 0; i < c; i++ {
+		hashs[i] = common.StringToData(list[i])
+	}
+	return hashs
 }

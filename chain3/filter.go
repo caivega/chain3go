@@ -60,7 +60,7 @@ type FilterOption struct {
 	FromBlock string        `json:"fromBlock,omitempty"`
 	ToBlock   string        `json:"toBlock,omitempty"`
 	Address   interface{}   `json:"address,omitempty"`
-	Topics    common.Topics `json:"topics,omitempty"`
+	Topics    []common.Data `json:"topics,omitempty"`
 }
 
 func (opt *FilterOption) String() string {

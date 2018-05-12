@@ -35,19 +35,19 @@ import (
 )
 
 // requestManager is responsible for passing messages to providers
-type requestManager struct {
+type RequestManager struct {
 	provider provider.Provider
 	rpc      rpc.RPC
 }
 
-func newRequestManager(provider provider.Provider) *requestManager {
-	return &requestManager{provider: provider, rpc: provider.GetRPCMethod()}
+func NewRequestManager(provider provider.Provider) *RequestManager {
+	return &RequestManager{provider: provider, rpc: provider.GetRPCMethod()}
 }
 
-func (rm *requestManager) newRequest(method string) rpc.Request {
+func (rm *RequestManager) NewRequest(method string) rpc.Request {
 	return rm.rpc.NewRequest(method)
 }
 
-func (rm *requestManager) send(request rpc.Request) (rpc.Response, error) {
+func (rm *RequestManager) Send(request rpc.Request) (rpc.Response, error) {
 	return rm.provider.Send(request)
 }

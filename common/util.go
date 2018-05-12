@@ -87,6 +87,12 @@ func StringToHash(s string) (hash Hash) {
 	return hash
 }
 
+func StringToData(s string) (data Data) {
+	b := HexToBytes(s)
+	copy(data[:], b)
+	return data
+}
+
 func ToBytes(data interface{}) ([]byte, error) {
 	var buf bytes.Buffer
 	enc := gob.NewEncoder(&buf)

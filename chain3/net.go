@@ -44,18 +44,18 @@ type Net interface {
 
 // NetAPI ...
 type NetAPI struct {
-	requestManager *requestManager
+	requestManager *RequestManager
 }
 
 // NewNetAPI ...
-func newNetAPI(requestManager *requestManager) Net {
+func newNetAPI(requestManager *RequestManager) Net {
 	return &NetAPI{requestManager: requestManager}
 }
 
 // Version returns the current network protocol version.
 func (net *NetAPI) Version() (string, error) {
-	req := net.requestManager.newRequest("net_version")
-	resp, err := net.requestManager.send(req)
+	req := net.requestManager.NewRequest("net_version")
+	resp, err := net.requestManager.Send(req)
 	if err != nil {
 		return "", err
 	}
@@ -64,8 +64,8 @@ func (net *NetAPI) Version() (string, error) {
 
 // PeerCount returns number of peers currenly connected to the client.
 func (net *NetAPI) PeerCount() (uint64, error) {
-	req := net.requestManager.newRequest("net_peerCount")
-	resp, err := net.requestManager.send(req)
+	req := net.requestManager.NewRequest("net_peerCount")
+	resp, err := net.requestManager.Send(req)
 	if err != nil {
 		return 0, err
 	}
@@ -78,8 +78,8 @@ func (net *NetAPI) PeerCount() (uint64, error) {
 
 // Listening returns true if client is actively listening for network connections.
 func (net *NetAPI) Listening() (bool, error) {
-	req := net.requestManager.newRequest("net_listening")
-	resp, err := net.requestManager.send(req)
+	req := net.requestManager.NewRequest("net_listening")
+	resp, err := net.requestManager.Send(req)
 	if err != nil {
 		return false, err
 	}
