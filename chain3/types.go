@@ -186,10 +186,9 @@ func (l JSONLog) ToLog() (log common.Log) {
 }
 
 func toBigInt(data json.Number) *big.Int {
-	f := big.NewFloat(0.0)
-	f.SetString(string(data))
-	result, _ := f.Int(nil)
-	return result
+	f := new(big.Int)
+	f.SetString(string(data), 0)
+	return f
 }
 
 func toHashArray(list []string) []common.Hash {

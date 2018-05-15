@@ -33,13 +33,15 @@ import (
 	"flag"
 	"fmt"
 
-	"github.com/caivega/chain3go/chain3"
+	Chain3 "github.com/caivega/chain3go/chain3"
+	"github.com/caivega/chain3go/common"
 	"github.com/caivega/chain3go/provider"
 	"github.com/caivega/chain3go/rpc"
 )
 
 var hostname = flag.String("hostname", "localhost", "The ethereum client RPC host")
 var port = flag.String("port", "8545", "The ethereum client RPC port")
+var address = flag.String("address", "0xde507e5d936f5fb636fd2181adbb48ca42f4e33c", "default filter address")
 var verbose = flag.Bool("verbose", false, "Print verbose messages")
 
 func main() {
@@ -50,19 +52,16 @@ func main() {
 	}
 
 	provider := provider.NewHTTPProvider(*hostname+":"+*port, rpc.GetDefaultMethod())
-	chain3Api := chain3.NewChain3(provider)
+	chain3 := Chain3.NewChain3(provider)
+	mc := chain3.Mc
 
-	filter, err := chain3Api.Mc.NewFilter(&chain3.FilterOption{
-		FromBlock: chain3Api.ToHex(0),
-		ToBlock:   "lastest",
-		Address:   "0xa0bca306b6a2d66aa66f8e0a36dd60ca79870d1b",
-	})
+	filter, err := mc.NewBlockFilter()
 	if err != nil {
 		fmt.Printf("Failed to create filter, %v\n", err)
 		return
 	}
 	defer func() {
-		if _, err := chain3Api.Mc.UninstallFilter(filter); err != nil {
+		if _, err := mc.UninstallFilter(filter); err != nil {
 			fmt.Printf("UninstallFilter failed: %v\n", err)
 		}
 
@@ -74,11 +73,22 @@ func main() {
 		for {
 			log, err := filterCh.Next()
 			if err == nil {
-				fmt.Printf("Block: %v\n", log)
-				filterCh.Close()
-				chain3Api.Mc.UninstallFilter(filter)
+				blockHash := log.(string)
+				block, err := mc.GetBlockByHash(common.StringToHash(blockHash), false)
+				if err != nil {
+					fmt.Println("error", err)
+				}
+				for i := 0; i < len(block.Transactions); i++ {
+					tx, err := mc.GetTransactionByHash(block.Transactions[i])
+					if err != nil {
+						fmt.Println("error", err)
+					}
+					if tx.From.String() == *address || tx.To.String() == *address {
+						fmt.Println("tx", i, tx.Hash.String(), tx.Value)
+					}
+				}
 			} else {
-				fmt.Printf("%v\n", err)
+				fmt.Println("error", err)
 				return
 			}
 		}
