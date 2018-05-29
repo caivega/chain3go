@@ -59,7 +59,8 @@ func (req *JSONRPCRequest) Set(key string, value interface{}) {
 		req.Method = fmt.Sprintf("%v", value)
 	case "params":
 		req.Params = req.Params[:0]
-		switch reflect.TypeOf(value).Kind() {
+		paramType := reflect.TypeOf(value)
+		switch paramType.Kind() {
 		case reflect.Slice, reflect.Array:
 			args := value.([]interface{})
 			for _, arg := range args {

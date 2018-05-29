@@ -85,17 +85,28 @@ type SyncStatus struct {
 
 // TransactionRequest ...
 type TransactionRequest struct {
-	From     Address  `json:"from"`
-	To       Address  `json:"to"`
-	Gas      *big.Int `json:"gas"`
-	GasPrice *big.Int `json:"gasprice"`
-	Value    *big.Int `json:"value"`
-	Data     []byte   `json:"data"`
+	From     Address `json:"from"`
+	To       Address `json:"to"`
+	Gas      string  `json:"gas"`
+	GasPrice string  `json:"gasprice"`
+	Value    string  `json:"value"`
+	Data     Data    `json:"data"`
 }
 
 func (tx *TransactionRequest) String() string {
 	jsonBytes, _ := json.Marshal(tx)
 	return string(jsonBytes)
+}
+
+func (tx *TransactionRequest) ToMap() *map[string]string {
+	m := make(map[string]string)
+	m["from"] = tx.From.String()
+	m["to"] = tx.To.String()
+	m["gas"] = tx.Gas
+	m["gasPrice"] = tx.GasPrice
+	m["value"] = tx.Value
+	m["data"] = tx.Data.String()
+	return &m
 }
 
 // Transaction ...

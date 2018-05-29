@@ -27,76 +27,46 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-package provider
+package main
 
 import (
+	"flag"
 	"fmt"
-	"io/ioutil"
-	"net/http"
-	"strings"
 
+	Chain3 "github.com/caivega/chain3go/chain3"
+	"github.com/caivega/chain3go/common"
+	"github.com/caivega/chain3go/provider"
 	"github.com/caivega/chain3go/rpc"
 )
 
-// HTTPProvider provides basic web3 interface
-type HTTPProvider struct {
-	host string
-	rpc  rpc.RPC
-}
+var hostname = flag.String("hostname", "localhost", "The ethereum client RPC host")
+var port = flag.String("port", "8545", "The ethereum client RPC port")
+var address = flag.String("address", "0xde507e5d936f5fb636fd2181adbb48ca42f4e33c", "default filter address")
+var verbose = flag.Bool("verbose", false, "Print verbose messages")
 
-// NewHTTPProvider creates a HTTP provider
-func NewHTTPProvider(host string, method rpc.RPC) Provider {
-	if !strings.HasPrefix(host, "http://") {
-		host = "http://" + host
-	}
-	if method == nil {
-		method = rpc.GetDefaultMethod()
-	}
-	return &HTTPProvider{host: host, rpc: method}
-}
+func main() {
+	flag.Parse()
 
-// IsConnected ...
-func (provider *HTTPProvider) IsConnected() bool {
-	req := provider.rpc.NewRequest("net_listening")
-	resp, err := provider.Send(req)
+	if *verbose {
+		fmt.Printf("Connect to %s:%s\n", *hostname, *port)
+	}
+
+	provider := provider.NewHTTPProvider(*hostname+":"+*port, rpc.GetDefaultMethod())
+	chain3 := Chain3.NewChain3(provider)
+	mc := chain3.Mc
+
+	req := &common.TransactionRequest{
+		From:     common.NewAddress(common.HexToBytes("0xdf1af7a1bde662f32e9d9765991baa5172125bff")),
+		To:       common.NewAddress(common.HexToBytes("0x4a0ca7eeea25c55c475bd51da15f60749a2f3cdc")),
+		Gas:      "0x76c0",
+		GasPrice: "0x9184e72a000",
+		Value:    "0x9184e72a",
+		Data:     common.NewData(common.HexToBytes("0x00")),
+	}
+	tx, err := mc.SendTransaction(req)
 	if err != nil {
-		return false
-	}
-	return resp.Get("result").(bool)
-}
-
-// Send JSON RPC request through http client
-func (provider *HTTPProvider) Send(request rpc.Request) (response rpc.Response, err error) {
-	contentType := provider.determineContentType()
-	fmt.Println("[send]", request.String())
-	resp, err := http.Post(provider.host, contentType, strings.NewReader(request.String()))
-	if err != nil {
-		return nil, err
-	}
-
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	response = provider.rpc.NewResponse(body)
-	fmt.Println("[get]", string(body))
-	if response == nil {
-		err = fmt.Errorf("Malformed response body, %s", string(body))
-	}
-	return response, err
-}
-
-func (provider *HTTPProvider) GetRPCMethod() rpc.RPC {
-	return provider.rpc
-}
-
-func (provider *HTTPProvider) determineContentType() string {
-	switch provider.rpc.Name() {
-	case "jsonrpc":
-		return "application/json"
-	default:
-		return "application/json"
+		fmt.Println("error", err)
+	} else {
+		fmt.Println("tx", tx.String())
 	}
 }

@@ -448,7 +448,7 @@ func (mc *MoacAPI) Sign(address common.Address, data []byte) ([]byte, error) {
 // if the data field contains code.
 func (mc *MoacAPI) SendTransaction(tx *common.TransactionRequest) (hash common.Hash, err error) {
 	req := mc.requestManager.NewRequest("mc_sendTransaction")
-	req.Set("params", []string{tx.String()})
+	req.Set("params", tx.ToMap())
 	resp, err := mc.requestManager.Send(req)
 	if err != nil {
 		return common.NewHash(nil), err
